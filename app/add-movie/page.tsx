@@ -14,7 +14,7 @@ import { formatYear, formatRating, formatRuntime } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n-context";
 
 interface SearchResult {
-  tmdbId: number;
+  tmdbId: number | null;
   title: string;
   originalTitle: string;
   overview: string;
@@ -26,6 +26,7 @@ interface SearchResult {
   genres: string[];
   runtime?: number;
   language: string;
+  sourceUrl?: string | null;
 }
 
 interface MovieList {
@@ -126,6 +127,8 @@ function AddMovieContent() {
         ...movieData,
         listId: selectedListId,
         note: note || undefined,
+        // carry source URL from the paste-link mode
+        sourceUrl: movieData.sourceUrl || (mode === "url" && url ? url : undefined),
       }),
     });
 

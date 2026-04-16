@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { searchMovies, fetchMovieFromUrl, getPosterUrl, getBackdropUrl, GENRE_MAP } from "@/lib/tmdb";
+import { searchMovies, fetchMovieFromUrl, getPosterUrl, getBackdropUrl, GENRE_MAP, PageMovieResult } from "@/lib/tmdb";
+import type { TMDBMovie } from "@/lib/tmdb";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -16,14 +17,23 @@ export async function GET(req: Request) {
       if (!movie) {
         return NextResponse.json({ error: "Could not fetch movie from URL" }, { status: 404 });
       }
+
+      // Page scrape result (any non-TMDB site)
+      if ("_type" in movie && movie._type === "page") {
+        return NextResponse.json({
+          results: [formatPageMovie(movie)],
+        });
+      }
+
+      // TMDB result
       return NextResponse.json({
-        results: [formatMovie(movie)],
+        results: [formatTmdbMovie(movie as TMDBMovie)],
       });
     }
 
     const data = await searchMovies(query!);
     return NextResponse.json({
-      results: data.results.slice(0, 10).map(formatMovie),
+      results: data.results.slice(0, 10).map(formatTmdbMovie),
       total: data.total_results,
     });
   } catch {
@@ -31,7 +41,25 @@ export async function GET(req: Request) {
   }
 }
 
-function formatMovie(movie: Parameters<typeof getPosterUrl>[0] extends string ? never : { id: number; title: string; original_title: string; overview: string; poster_path: string | null; backdrop_path: string | null; release_date: string; vote_average: number; vote_count: number; genre_ids?: number[]; genres?: { id: number; name: string }[]; runtime?: number; original_language: string }) {
+function formatPageMovie(movie: PageMovieResult) {
+  return {
+    tmdbId: null,
+    title: movie.title,
+    originalTitle: movie.title,
+    overview: movie.overview,
+    posterUrl: movie.posterUrl,
+    backdropUrl: null,
+    releaseDate: movie.releaseDate || null,
+    rating: 0,
+    voteCount: 0,
+    genres: [],
+    runtime: null,
+    language: null,
+    sourceUrl: movie.sourceUrl,
+  };
+}
+
+function formatTmdbMovie(movie: TMDBMovie) {
   const genres = movie.genres?.map((g) => g.name) ||
     (movie.genre_ids?.map((id) => GENRE_MAP[id]).filter(Boolean) ?? []);
 
@@ -48,5 +76,6 @@ function formatMovie(movie: Parameters<typeof getPosterUrl>[0] extends string ? 
     genres,
     runtime: movie.runtime,
     language: movie.original_language,
+    sourceUrl: null,
   };
 }
