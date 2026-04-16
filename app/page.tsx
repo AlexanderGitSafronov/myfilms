@@ -4,9 +4,9 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getTrendingMovies, getPosterUrl } from "@/lib/tmdb";
 import { Button } from "@/components/ui/button";
-import { Film, ArrowRight, Users, List, Share2, Rss } from "lucide-react";
+import { Film, ArrowRight, Rss, List } from "lucide-react";
 import { FadeUp, StaggerList, StaggerItem } from "@/components/motion";
-import { MovieMarquee } from "@/components/home/movie-marquee";
+import { LandingHero } from "@/components/home/landing-hero";
 
 async function getTrendingPosters() {
   try {
@@ -125,113 +125,5 @@ export default async function HomePage() {
   }
 
   // Landing page
-  return (
-    <div className="relative min-h-screen overflow-hidden bg-black">
-
-      {/* ── Aurora glow blobs (CSS animated, GPU only) ── */}
-      <div className="pointer-events-none select-none absolute inset-0 overflow-hidden z-0">
-        <div
-          className="absolute w-[700px] h-[700px] rounded-full opacity-[0.12]"
-          style={{
-            background: "radial-gradient(circle, #dc2626 0%, #7f1d1d 50%, transparent 70%)",
-            top: "5%", left: "20%",
-            animation: "aurora 18s ease-in-out infinite",
-            filter: "blur(60px)",
-          }}
-        />
-        <div
-          className="absolute w-[500px] h-[500px] rounded-full opacity-[0.08]"
-          style={{
-            background: "radial-gradient(circle, #ef4444 0%, #dc2626 40%, transparent 70%)",
-            top: "30%", right: "10%",
-            animation: "aurora2 22s ease-in-out infinite",
-            filter: "blur(80px)",
-          }}
-        />
-        <div
-          className="absolute w-[400px] h-[400px] rounded-full opacity-[0.06]"
-          style={{
-            background: "radial-gradient(circle, #b91c1c 0%, transparent 70%)",
-            bottom: "10%", left: "40%",
-            animation: "aurora 28s ease-in-out infinite reverse",
-            filter: "blur(100px)",
-          }}
-        />
-      </div>
-
-      {/* ── Hero ── */}
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-20 pb-12 text-center">
-        <FadeUp>
-          <div className="inline-flex items-center gap-2 bg-red-600/10 border border-red-600/25 rounded-full px-4 py-1.5 mb-8 backdrop-blur-sm">
-            <Film className="h-3.5 w-3.5 text-red-400" />
-            <span className="text-sm text-red-400 font-medium">Рекомендации фильмов — просто</span>
-          </div>
-        </FadeUp>
-
-        <FadeUp delay={0.08}>
-          <h1 className="text-5xl sm:text-7xl font-bold text-white leading-[1.05] mb-6 tracking-tight">
-            Делитесь<br />
-            любимыми фильмами<br />
-            <span className="gradient-text-red">с друзьями</span>
-          </h1>
-        </FadeUp>
-
-        <FadeUp delay={0.15}>
-          <p className="text-lg sm:text-xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Создавайте подборки фильмов, следите за тем, что смотрят друзья,
-            и никогда не забывайте рекомендации.
-          </p>
-        </FadeUp>
-
-        <FadeUp delay={0.2}>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/register">
-              <Button size="lg" className="w-full sm:w-auto" style={{ boxShadow: "0 0 30px rgba(220,38,38,0.35), 0 0 60px rgba(220,38,38,0.1)" }}>
-                Начать бесплатно
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/login">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto">
-                Войти
-              </Button>
-            </Link>
-          </div>
-        </FadeUp>
-      </div>
-
-      {/* ── Infinite scrolling poster rows ── */}
-      {movies.length > 0 && (
-        <div className="relative z-10 py-4" style={{ maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)" }}>
-          <MovieMarquee movies={movies} />
-        </div>
-      )}
-
-      {/* ── Features ── */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-20">
-        <FadeUp>
-          <p className="text-center text-zinc-500 text-sm uppercase tracking-widest mb-10 font-medium">
-            Всё что нужно для кино-коллекции
-          </p>
-        </FadeUp>
-        <StaggerList className="grid sm:grid-cols-3 gap-5">
-          {[
-            { icon: List,   title: "Организация", desc: "Создавайте списки: «Хочу посмотреть», «Любимые», «Советую друзьям»." },
-            { icon: Film,   title: "Любой сайт",  desc: "Вставьте ссылку с Multiplex, Megogo, IMDB или любого другого сайта — постер и описание подтянутся сами." },
-            { icon: Share2, title: "Поделиться",  desc: "Отправьте публичную ссылку на любой список. Друзья увидят всё, что вы рекомендуете." },
-          ].map(({ icon: Icon, title, desc }) => (
-            <StaggerItem key={title}>
-              <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-6 h-full hover:border-white/15 hover:bg-white/[0.05] transition-all duration-300 backdrop-blur-sm">
-                <div className="h-10 w-10 rounded-xl bg-red-600/10 border border-red-600/20 flex items-center justify-center mb-4">
-                  <Icon className="h-5 w-5 text-red-400" />
-                </div>
-                <h3 className="font-semibold text-white text-lg mb-2">{title}</h3>
-                <p className="text-zinc-400 text-sm leading-relaxed">{desc}</p>
-              </div>
-            </StaggerItem>
-          ))}
-        </StaggerList>
-      </div>
-    </div>
-  );
+  return <LandingHero movies={movies} />;
 }
