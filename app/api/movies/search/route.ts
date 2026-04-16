@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { searchMovies, fetchMovieFromUrl, getPosterUrl, getBackdropUrl, GENRE_MAP, PageMovieResult } from "@/lib/tmdb";
+import { prisma } from "@/lib/db";
 import type { TMDBMovie } from "@/lib/tmdb";
 
 export async function GET(req: Request) {
@@ -18,23 +19,54 @@ export async function GET(req: Request) {
         return NextResponse.json({ error: "Could not fetch movie from URL" }, { status: 404 });
       }
 
-      // Page scrape result (any non-TMDB site)
       if ("_type" in movie && movie._type === "page") {
-        return NextResponse.json({
-          results: [formatPageMovie(movie)],
-        });
+        return NextResponse.json({ results: [formatPageMovie(movie)] });
       }
 
-      // TMDB result
-      return NextResponse.json({
-        results: [formatTmdbMovie(movie as TMDBMovie)],
-      });
+      return NextResponse.json({ results: [formatTmdbMovie(movie as TMDBMovie)] });
     }
 
-    const data = await searchMovies(query!);
+    // Search TMDB and local DB in parallel
+    const [tmdbData, localMovies] = await Promise.all([
+      searchMovies(query!).catch(() => ({ results: [], total_results: 0 })),
+      prisma.movie.findMany({
+        where: {
+          title: { contains: query!, mode: "insensitive" },
+        },
+        take: 10,
+        orderBy: { title: "asc" },
+      }),
+    ]);
+
+    const tmdbResults = tmdbData.results.slice(0, 10).map(formatTmdbMovie);
+
+    // Format local movies (skip those already in TMDB results)
+    const tmdbIds = new Set(tmdbResults.map((m) => m.tmdbId).filter(Boolean));
+    const localResults = localMovies
+      .filter((m) => !m.tmdbId || !tmdbIds.has(m.tmdbId))
+      .map((m) => ({
+        tmdbId: m.tmdbId,
+        title: m.title,
+        originalTitle: m.originalTitle,
+        overview: m.overview,
+        posterUrl: m.posterUrl,
+        backdropUrl: m.backdropUrl,
+        releaseDate: m.releaseDate,
+        rating: m.rating ?? 0,
+        voteCount: m.voteCount ?? 0,
+        genres: m.genres ?? [],
+        runtime: m.runtime,
+        language: m.language,
+        sourceUrl: m.sourceUrl,
+        localId: m.id,
+      }));
+
+    // Local results first if they match better, then TMDB
+    const combined = [...localResults, ...tmdbResults].slice(0, 15);
+
     return NextResponse.json({
-      results: data.results.slice(0, 10).map(formatTmdbMovie),
-      total: data.total_results,
+      results: combined,
+      total: combined.length,
     });
   } catch {
     return NextResponse.json({ error: "Failed to search movies" }, { status: 500 });
