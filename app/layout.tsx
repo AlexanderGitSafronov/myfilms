@@ -7,7 +7,7 @@ import { ToastProvider } from "@/components/ui/toast";
 import { Navbar, MobileNav } from "@/components/layout/navbar";
 import { PWARegister } from "@/components/pwa-register";
 import { I18nProvider } from "@/lib/i18n-context";
-import { NavigationProgress } from "@/components/ui/navigation-progress";
+import { NavigationProgress, SplashLoader } from "@/components/ui/page-loader";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -50,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <I18nProvider>
         <SessionProvider>
           <ToastProvider>
+            <SplashLoader />
             <Suspense fallback={null}>
               <NavigationProgress />
             </Suspense>
