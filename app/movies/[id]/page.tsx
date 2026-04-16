@@ -4,7 +4,7 @@ import { useState, useEffect, use } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Heart, ExternalLink, Clock, Calendar, Send, ArrowLeft } from "lucide-react";
+import { Star, Heart, ExternalLink, Clock, Calendar, Send, ArrowLeft, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
@@ -12,6 +12,7 @@ import { useI18n } from "@/lib/i18n-context";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/toast";
 import { formatRating, formatRuntime, formatDate } from "@/lib/utils";
+import { WatchStatus } from "@/components/movies/watch-status";
 
 interface Comment {
   id: string;
@@ -22,6 +23,7 @@ interface Comment {
 
 interface Movie {
   id: string;
+  tmdbId: number | null;
   title: string;
   overview: string | null;
   posterUrl: string | null;
@@ -46,6 +48,8 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
   const [loading, setLoading] = useState(true);
   const [comment, setComment] = useState("");
   const [posting, setPosting] = useState(false);
+  const [trailer, setTrailer] = useState<string | null>(null);
+  const [similar, setSimilar] = useState<Array<{ id: number; title: string; posterUrl: string | null; rating: number }>>([]);
 
   useEffect(() => {
     fetch(`/api/movies/${id}`)
@@ -55,6 +59,15 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
         setLikeCount(d.likeCount);
         setLiked(d.userLiked);
         setLoading(false);
+        // Load trailer + similar if TMDB movie
+        if (d.movie?.tmdbId) {
+          fetch(`/api/movies/tmdb/${d.movie.tmdbId}/extras`)
+            .then(r => r.ok ? r.json() : null)
+            .then(extras => {
+              if (extras?.trailer) setTrailer(extras.trailer);
+              if (extras?.similar) setSimilar(extras.similar);
+            });
+        }
       });
   }, [id]);
 
@@ -161,7 +174,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
               {movie.genres.map((g) => <Badge key={g} variant="secondary">{g}</Badge>)}
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={handleLike}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors ${
@@ -173,6 +186,17 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
                 <Heart className={`h-4 w-4 ${liked ? "fill-red-400" : ""}`} />
                 {likeCount}
               </button>
+              {trailer && (
+                <a
+                  href={`https://www.youtube.com/watch?v=${trailer}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm bg-red-600/10 text-red-400 hover:bg-red-600/20 border border-red-600/20 transition-colors"
+                >
+                  <Play className="h-3.5 w-3.5 fill-red-400" />
+                  Трейлер
+                </a>
+              )}
               {movie.sourceUrl && (
                 <a
                   href={movie.sourceUrl}
@@ -185,6 +209,9 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
                 </a>
               )}
             </div>
+            <div className="mt-3">
+              <WatchStatus movieId={movie.id} />
+            </div>
           </div>
         </div>
       </div>
@@ -194,6 +221,36 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-white mb-3">{t("movieOverview")}</h2>
           <p className="text-zinc-300 leading-relaxed">{movie.overview}</p>
+        </div>
+      )}
+
+      {/* Similar movies */}
+      {similar.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-white mb-4">Похожие фильмы</h2>
+          <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+            {similar.map((m) => (
+              <a
+                key={m.id}
+                href={`/search?q=${encodeURIComponent(m.title)}`}
+                className="flex-shrink-0 w-24 group"
+              >
+                <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-zinc-800 mb-2">
+                  {m.posterUrl ? (
+                    <Image src={m.posterUrl} alt={m.title} fill className="object-cover group-hover:scale-105 transition-transform duration-300" sizes="96px" />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-2xl">🎬</div>
+                  )}
+                </div>
+                <p className="text-xs text-zinc-400 group-hover:text-white transition-colors line-clamp-2 leading-snug">{m.title}</p>
+                {m.rating > 0 && (
+                  <p className="text-xs text-yellow-400 mt-0.5 flex items-center gap-0.5">
+                    <Star className="h-3 w-3 fill-yellow-400" />{m.rating.toFixed(1)}
+                  </p>
+                )}
+              </a>
+            ))}
+          </div>
         </div>
       )}
 

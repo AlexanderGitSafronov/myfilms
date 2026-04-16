@@ -18,13 +18,16 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts  Account[]
-  sessions  Session[]
-  lists     MovieList[]
-  likes     MovieLike[]
-  comments  Comment[]
-  followers Follow[]    @relation("UserFollowing")
-  following Follow[]    @relation("UserFollowers")
+  accounts       Account[]
+  sessions       Session[]
+  lists          MovieList[]
+  likes          MovieLike[]
+  comments       Comment[]
+  followers      Follow[]           @relation("UserFollowing")
+  following      Follow[]           @relation("UserFollowers")
+  movieStatuses  UserMovieStatus[]
+  notifications  Notification[]     @relation("NotificationRecipient")
+  sentNotifications Notification[]  @relation("NotificationSender")
 
   @@index([username])
 }
@@ -115,11 +118,58 @@ model Movie {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  listMovies ListMovie[]
-  likes      MovieLike[]
-  comments   Comment[]
+  listMovies    ListMovie[]
+  likes         MovieLike[]
+  comments      Comment[]
+  userStatuses  UserMovieStatus[]
 
   @@index([tmdbId])
+}
+
+enum WatchStatus {
+  WANT
+  WATCHING
+  WATCHED
+}
+
+model UserMovieStatus {
+  id         String      @id @default(cuid())
+  userId     String
+  movieId    String
+  status     WatchStatus
+  userRating Float?
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  movie Movie @relation(fields: [movieId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, movieId])
+  @@index([userId])
+  @@index([movieId])
+}
+
+enum NotificationType {
+  FOLLOW
+  LIKE
+  COMMENT
+}
+
+model Notification {
+  id         String           @id @default(cuid())
+  userId     String
+  fromUserId String?
+  type       NotificationType
+  movieId    String?
+  listId     String?
+  read       Boolean          @default(false)
+  createdAt  DateTime         @default(now())
+
+  user     User  @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  fromUser User? @relation("NotificationSender", fields: [fromUserId], references: [id], onDelete: SetNull)
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
 }
 
 model ListMovie {

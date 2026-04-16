@@ -15,25 +15,52 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    include: {
-      lists: {
-        include: {
-          _count: { select: { movies: true } },
-          movies: {
-            take: 4,
-            include: { movie: { select: { posterUrl: true, title: true } } },
-            orderBy: { order: "asc" },
+  const [user, totalMovies, genreStats, watchedCount, followerCount, followingCount] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: {
+        lists: {
+          include: {
+            _count: { select: { movies: true } },
+            movies: {
+              take: 4,
+              include: { movie: { select: { posterUrl: true, title: true } } },
+              orderBy: { order: "asc" },
+            },
           },
+          orderBy: { updatedAt: "desc" },
         },
-        orderBy: { updatedAt: "desc" },
+        _count: { select: { lists: true, likes: true } },
       },
-      _count: { select: { lists: true, likes: true } },
-    },
-  });
+    }),
+    // Total movies across all lists
+    prisma.listMovie.count({
+      where: { list: { userId: session.user.id } },
+    }),
+    // Genre breakdown
+    prisma.listMovie.findMany({
+      where: { list: { userId: session.user.id } },
+      include: { movie: { select: { genres: true } } },
+    }),
+    // Watched count
+    prisma.userMovieStatus.count({
+      where: { userId: session.user.id, status: "WATCHED" },
+    }),
+    prisma.follow.count({ where: { followingId: session.user.id } }),
+    prisma.follow.count({ where: { followerId: session.user.id } }),
+  ]);
 
-  return NextResponse.json({ user });
+  // Count genres
+  const genreMap: Record<string, number> = {};
+  genreStats.forEach(lm => {
+    (lm.movie.genres || []).forEach(g => { genreMap[g] = (genreMap[g] || 0) + 1; });
+  });
+  const topGenres = Object.entries(genreMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([genre, count]) => ({ genre, count }));
+
+  return NextResponse.json({ user, stats: { totalMovies, watchedCount, topGenres, followerCount, followingCount } });
 }
 
 export async function PATCH(req: Request) {

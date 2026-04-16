@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { Film, Plus, List, User, LogOut, Home, Search, Languages, Rss } from "lucide-react";
+import { Film, Plus, List, User, LogOut, Home, Search, Languages, Rss, Compass, Bell } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useI18n } from "@/lib/i18n-context";
 import { Locale } from "@/lib/translations";
 import { motion } from "framer-motion";
@@ -22,11 +22,18 @@ export function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [unread, setUnread] = useState(0);
   const { t, locale, setLocale } = useI18n();
+
+  useEffect(() => {
+    if (!session) return;
+    fetch("/api/notifications").then(r => r.json()).then(d => setUnread(d.unreadCount ?? 0));
+  }, [session, pathname]);
 
   const navLinks = [
     { href: "/", icon: Home, label: t("home") },
     { href: "/feed", icon: Rss, label: t("feed") },
+    { href: "/explore", icon: Compass, label: "Обзор" },
     { href: "/lists", icon: List, label: t("myLists") },
     { href: "/add-movie", icon: Plus, label: t("addMovie") },
   ];
@@ -74,12 +81,19 @@ export function Navbar() {
 
           {/* Right side */}
           <div className="flex items-center gap-2">
-            <Link
-              href="/search"
-              className="p-2 text-zinc-400 hover:text-white transition-colors"
-            >
+            <Link href="/search" className="p-2 text-zinc-400 hover:text-white transition-colors">
               <Search className="h-5 w-5" />
             </Link>
+            {session && (
+              <Link href="/notifications" className="relative p-2 text-zinc-400 hover:text-white transition-colors" onClick={() => setUnread(0)}>
+                <Bell className="h-5 w-5" />
+                {unread > 0 && (
+                  <span className="absolute top-1 right-1 h-4 w-4 bg-red-500 rounded-full text-[10px] font-bold text-white flex items-center justify-center">
+                    {unread > 9 ? "9+" : unread}
+                  </span>
+                )}
+              </Link>
+            )}
 
             {/* Language switcher */}
             <div className="relative">
@@ -173,6 +187,7 @@ export function MobileNav() {
     ? [
         { href: "/", icon: Home, label: t("home") },
         { href: "/feed", icon: Rss, label: t("feed") },
+        { href: "/explore", icon: Compass, label: "Обзор" },
         { href: "/add-movie", icon: Plus, label: t("addMovie") },
         { href: "/profile", icon: User, label: t("profile") },
       ]

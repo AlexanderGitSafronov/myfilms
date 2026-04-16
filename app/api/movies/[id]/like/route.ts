@@ -26,6 +26,16 @@ export async function POST(
     await prisma.movieLike.create({
       data: { userId: session.user.id, movieId },
     });
+    // Notify movie owner (find who added this movie to their list)
+    const listMovie = await prisma.listMovie.findFirst({
+      where: { movieId },
+      include: { list: { select: { userId: true } } },
+    });
+    if (listMovie && listMovie.list.userId !== session.user.id) {
+      await prisma.notification.create({
+        data: { userId: listMovie.list.userId, fromUserId: session.user.id, type: "LIKE", movieId },
+      }).catch(() => {}); // ignore if movie owner not found
+    }
     return NextResponse.json({ liked: true });
   }
 }

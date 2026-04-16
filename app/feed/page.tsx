@@ -8,7 +8,7 @@ import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Star, Rss, List, ChevronDown } from "lucide-react";
+import { Star, Rss, List, ChevronDown, Filter, X } from "lucide-react";
 import { FadeUp, StaggerList, StaggerItem } from "@/components/motion";
 import { formatYear, formatRating, formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -42,6 +42,11 @@ export default function FeedPage() {
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [genreFilter, setGenreFilter] = useState<string | null>(null);
+
+  // Collect all genres from loaded items for filter chips
+  const allGenres = Array.from(new Set(items.flatMap(i => i.movie.genres))).slice(0, 12);
+  const filtered = genreFilter ? items.filter(i => i.movie.genres.includes(genreFilter)) : items;
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/login");
@@ -95,6 +100,31 @@ export default function FeedPage() {
       </div>
 
       <FadeUp>
+        {/* Genre filters */}
+        {allGenres.length > 0 && (
+          <div className="flex gap-2 flex-wrap mb-5">
+            <button
+              onClick={() => setGenreFilter(null)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                !genreFilter ? "bg-red-600/20 border-red-600/40 text-red-400" : "border-white/10 text-zinc-400 hover:border-white/20"
+              }`}
+            >
+              <Filter className="h-3 w-3" />Все
+            </button>
+            {allGenres.map(g => (
+              <button
+                key={g}
+                onClick={() => setGenreFilter(g === genreFilter ? null : g)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                  genreFilter === g ? "bg-red-600/20 border-red-600/40 text-red-400" : "border-white/10 text-zinc-400 hover:border-white/20"
+                }`}
+              >
+                {g}
+              </button>
+            ))}
+          </div>
+        )}
+
         {items.length === 0 ? (
           <div className="text-center py-20">
             <Rss className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
@@ -106,7 +136,7 @@ export default function FeedPage() {
         ) : (
           <>
             <StaggerList className="space-y-4">
-              {items.map((item) => (
+              {filtered.map((item) => (
                 <StaggerItem key={item.id}>
                   <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 hover:border-white/15 transition-colors">
 
