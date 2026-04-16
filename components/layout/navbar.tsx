@@ -23,12 +23,19 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [unread, setUnread] = useState(0);
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
   const { t, locale, setLocale } = useI18n();
+
+  // Clear pending when real navigation completes
+  useEffect(() => { setPendingHref(null); }, [pathname]);
 
   useEffect(() => {
     if (!session) return;
     fetch("/api/notifications").then(r => r.json()).then(d => setUnread(d.unreadCount ?? 0));
   }, [session, pathname]);
+
+  // Optimistic active: use pending href if set, else real pathname
+  const activeHref = pendingHref ?? pathname;
 
   const navLinks = [
     { href: "/", icon: Home, label: t("home") },
@@ -54,11 +61,12 @@ export function Navbar() {
           {session && (
             <nav className="hidden md:flex items-center gap-1">
               {navLinks.map(({ href, icon: Icon, label }) => {
-                const active = pathname === href;
+                const active = activeHref === href;
                 return (
                   <Link
                     key={href}
                     href={href}
+                    onClick={() => setPendingHref(href)}
                     className={cn(
                       "relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
                       active ? "text-white" : "text-zinc-400 hover:text-white hover:bg-white/5"
@@ -182,6 +190,11 @@ export function MobileNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
   const { t } = useI18n();
+  const [pendingHref, setPendingHref] = useState<string | null>(null);
+
+  useEffect(() => { setPendingHref(null); }, [pathname]);
+
+  const activeHref = pendingHref ?? pathname;
 
   const links = session
     ? [
@@ -200,17 +213,23 @@ export function MobileNav() {
     <nav className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-black backdrop-blur-xl border-t border-white/5" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       <div className="flex items-stretch h-16">
         {links.map(({ href, icon: Icon, label }) => {
-          const active = pathname === href;
+          const active = activeHref === href;
           return (
             <Link
               key={href}
               href={href}
+              onClick={() => setPendingHref(href)}
               className={cn(
-                "flex-1 flex flex-col items-center justify-center gap-1 transition-colors",
+                "flex-1 flex flex-col items-center justify-center gap-1 transition-colors duration-100",
                 active ? "text-red-400" : "text-zinc-500 hover:text-zinc-300"
               )}
             >
-              <Icon className={cn("h-5 w-5", href === "/add-movie" && !active && "stroke-[1.5]")} />
+              <motion.div
+                animate={{ scale: active ? 1.15 : 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+              >
+                <Icon className="h-5 w-5" />
+              </motion.div>
               <span className="text-[10px] font-medium">{label}</span>
             </Link>
           );
