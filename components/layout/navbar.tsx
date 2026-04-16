@@ -39,7 +39,7 @@ export function Navbar() {
   ];
 
   return (
-    <header className="sticky top-0 z-40 border-b border-white/5 bg-black/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-white/5 bg-black backdrop-blur-xl" style={{ paddingTop: "env(safe-area-inset-top)" }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -197,7 +197,7 @@ export function MobileNav() {
       ];
 
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-black/90 backdrop-blur-xl border-t border-white/5">
+    <nav className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-black backdrop-blur-xl border-t border-white/5" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       <div className="flex items-stretch h-16">
         {links.map(({ href, icon: Icon, label }) => {
           const active = pathname === href;
