@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getTrendingMovies, getPosterUrl } from "@/lib/tmdb";
 import { Button } from "@/components/ui/button";
-import { Film, ArrowRight, Rss, List } from "lucide-react";
+import { Film, ArrowRight, Rss, List, Users } from "lucide-react";
 import { FadeUp, StaggerList, StaggerItem } from "@/components/motion";
 import { LandingHero } from "@/components/home/landing-hero";
 
