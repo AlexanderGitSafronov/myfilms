@@ -114,11 +114,11 @@ export const translations = {
 
     // Add movie
     addAMovieTitle: "Добавить фильм",
-    addMovieDesc: "Найдите или вставьте ссылку для добавления фильма в список",
+    addMovieDesc: "Найдите по названию или вставьте ссылку с любого сайта",
     searchTab: "Поиск",
     pasteLink: "Вставить ссылку",
     searchForMovie: "Поиск фильма...",
-    pasteImdbLink: "Вставьте ссылку IMDB или TMDB...",
+    pasteImdbLink: "Вставьте ссылку на фильм с любого сайта...",
     fetch: "Найти",
     changeMovie: "Сменить фильм",
     editDetails: "Редактировать",
@@ -133,7 +133,7 @@ export const translations = {
     failedToFetch: "Не удалось загрузить фильм",
     failedToAdd: "Не удалось добавить фильм",
     searchOrPaste: "Найдите фильм или вставьте ссылку",
-    supportsLinks: "Поддерживаются ссылки IMDB и TMDB",
+    supportsLinks: "Multiplex, Megogo, IMDB, TMDB и другие сайты",
 
     // List detail
     backToLists: "Мои списки",
@@ -286,7 +286,7 @@ export const translations = {
     searchTab: "Пошук",
     pasteLink: "Вставити посилання",
     searchForMovie: "Пошук фільму...",
-    pasteImdbLink: "Вставте посилання IMDB або TMDB...",
+    pasteImdbLink: "Вставте посилання на фільм з будь-якого сайту...",
     fetch: "Знайти",
     changeMovie: "Змінити фільм",
     editDetails: "Редагувати",
@@ -301,7 +301,7 @@ export const translations = {
     failedToFetch: "Не вдалося завантажити фільм",
     failedToAdd: "Не вдалося додати фільм",
     searchOrPaste: "Знайдіть фільм або вставте посилання",
-    supportsLinks: "Підтримуються посилання IMDB та TMDB",
+    supportsLinks: "Multiplex, Megogo, IMDB, TMDB та інші сайти",
 
     // List detail
     backToLists: "Мої списки",
@@ -454,7 +454,7 @@ export const translations = {
     searchTab: "Search",
     pasteLink: "Paste Link",
     searchForMovie: "Search for a movie...",
-    pasteImdbLink: "Paste IMDB or TMDB link...",
+    pasteImdbLink: "Paste a link from any movie site...",
     fetch: "Fetch",
     changeMovie: "Change movie",
     editDetails: "Edit details",
@@ -469,7 +469,7 @@ export const translations = {
     failedToFetch: "Failed to fetch movie",
     failedToAdd: "Failed to add movie",
     searchOrPaste: "Search for a movie or paste a link",
-    supportsLinks: "Supports IMDB and TMDB links",
+    supportsLinks: "Multiplex, Megogo, IMDB, TMDB and more",
 
     // List detail
     backToLists: "My Lists",
