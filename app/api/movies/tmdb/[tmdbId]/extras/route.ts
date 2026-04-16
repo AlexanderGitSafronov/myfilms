@@ -33,7 +33,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ tmdbId:
     .map((m: { id: number; title: string; poster_path: string | null; vote_average: number }) => ({
       id: m.id,
       title: m.title,
-      posterUrl: getPosterUrl(m.poster_path, "w185"),
+      posterUrl: getPosterUrl(m.poster_path, "w300"),
       rating: m.vote_average,
     }));
 
