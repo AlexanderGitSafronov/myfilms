@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: myfilms-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: myfilms
+      POSTGRES_PASSWORD: myfilms_secret
+      POSTGRES_DB: myfilms
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myfilms -d myfilms"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: myfilms-app
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    environment:
+      DATABASE_URL: postgresql://myfilms:myfilms_secret@db:5432/myfilms
+      NEXTAUTH_URL: http://localhost:3002
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-XlzD14J6DtuRye+8X7/PkmOeKwmSmtAZ2Fs9mP2j04k=}
+      TMDB_ACCESS_TOKEN: ${TMDB_ACCESS_TOKEN:-}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      NODE_ENV: production
+    depends_on:
+      db:
+        condition: service_healthy
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
+    container_name: myfilms-migrate
+    environment:
+      DATABASE_URL: postgresql://myfilms:myfilms_secret@db:5432/myfilms
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  postgres_data:
