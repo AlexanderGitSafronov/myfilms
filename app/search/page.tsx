@@ -15,7 +15,8 @@ import { formatYear, formatRating } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n-context";
 
 interface MovieResult {
-  tmdbId: number;
+  tmdbId: number | null;
+  localId?: string;
   title: string;
   overview: string;
   posterUrl: string | null;
@@ -150,17 +151,39 @@ function SearchContent() {
       {tab === "movies" && (
         movieResults.length > 0 ? (
           <div className="space-y-3">
-            {movieResults.map((movie) => (
-              <div key={movie.tmdbId} className="flex gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all">
-                <div className="relative h-24 w-16 rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0">
-                  {movie.posterUrl ? (
-                    <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover" />
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-2xl">🎬</div>
-                  )}
-                </div>
+            {movieResults.map((movie, i) => {
+              const moviePageHref = movie.localId ? `/movies/${movie.localId}` : null;
+              const addHref = `/add-movie?q=${encodeURIComponent(movie.title)}`;
+              const cardKey = movie.localId ?? movie.tmdbId ?? i;
+
+              return (
+              <div key={cardKey} className="flex gap-4 p-4 rounded-xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all">
+                {/* Poster — clickable if has local page */}
+                {moviePageHref ? (
+                  <Link href={moviePageHref} className="relative h-24 w-16 rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0 block">
+                    {movie.posterUrl ? (
+                      <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover" />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-2xl">🎬</div>
+                    )}
+                  </Link>
+                ) : (
+                  <div className="relative h-24 w-16 rounded-lg overflow-hidden bg-zinc-800 flex-shrink-0">
+                    {movie.posterUrl ? (
+                      <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover" />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-2xl">🎬</div>
+                    )}
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-white mb-1">{movie.title}</h3>
+                  {moviePageHref ? (
+                    <Link href={moviePageHref}>
+                      <h3 className="font-semibold text-white hover:text-red-400 transition-colors mb-1">{movie.title}</h3>
+                    </Link>
+                  ) : (
+                    <h3 className="font-semibold text-white mb-1">{movie.title}</h3>
+                  )}
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-sm text-zinc-500">{formatYear(movie.releaseDate)}</span>
                     {movie.rating > 0 && (
@@ -178,7 +201,7 @@ function SearchContent() {
                   )}
                 </div>
                 <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                  <Link href={`/add-movie?q=${encodeURIComponent(movie.title)}`}>
+                  <Link href={addHref}>
                     <Button size="sm" className="text-xs">
                       <Plus className="h-3.5 w-3.5 mr-1" />
                       {t("add")}
@@ -186,7 +209,8 @@ function SearchContent() {
                   </Link>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         ) : query && !searching ? (
           <div className="text-center py-16 text-zinc-500">

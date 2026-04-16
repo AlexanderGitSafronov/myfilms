@@ -40,7 +40,7 @@ export async function GET(req: Request) {
 
     const tmdbResults = tmdbData.results.slice(0, 10).map(formatTmdbMovie);
 
-    // Format local movies (skip those already in TMDB results)
+    // Format local movies (skip those already in TMDB results by tmdbId or title)
     const tmdbIds = new Set(tmdbResults.map((m) => m.tmdbId).filter(Boolean));
     const localResults = localMovies
       .filter((m) => !m.tmdbId || !tmdbIds.has(m.tmdbId))
@@ -61,8 +61,11 @@ export async function GET(req: Request) {
         localId: m.id,
       }));
 
-    // Local results first if they match better, then TMDB
-    const combined = [...localResults, ...tmdbResults].slice(0, 15);
+    // Remove TMDB results that duplicate local results by title
+    const localTitles = new Set(localResults.map((m) => m.title.toLowerCase()));
+    const tmdbFiltered = tmdbResults.filter((m) => !localTitles.has(m.title.toLowerCase()));
+
+    const combined = [...localResults, ...tmdbFiltered].slice(0, 15);
 
     return NextResponse.json({
       results: combined,
