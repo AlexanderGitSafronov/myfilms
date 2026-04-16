@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { Film, Plus, List, User, LogOut, Home, Search, Languages } from "lucide-react";
+import { Film, Plus, List, User, LogOut, Home, Search, Languages, Rss } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -25,6 +25,7 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/", icon: Home, label: t("home") },
+    { href: "/feed", icon: Rss, label: t("feed") },
     { href: "/lists", icon: List, label: t("myLists") },
     { href: "/add-movie", icon: Plus, label: t("addMovie") },
   ];
@@ -162,7 +163,7 @@ export function MobileNav() {
   const links = session
     ? [
         { href: "/", icon: Home, label: t("home") },
-        { href: "/lists", icon: List, label: t("myLists") },
+        { href: "/feed", icon: Rss, label: t("feed") },
         { href: "/add-movie", icon: Plus, label: t("addMovie") },
         { href: "/profile", icon: User, label: t("profile") },
       ]

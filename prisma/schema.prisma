@@ -18,13 +18,29 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  accounts Account[]
-  sessions Session[]
-  lists    MovieList[]
-  likes    MovieLike[]
-  comments Comment[]
+  accounts  Account[]
+  sessions  Session[]
+  lists     MovieList[]
+  likes     MovieLike[]
+  comments  Comment[]
+  followers Follow[]    @relation("UserFollowing")
+  following Follow[]    @relation("UserFollowers")
 
   @@index([username])
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower  User @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
+  following User @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
 }
 
 model Account {

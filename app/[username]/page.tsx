@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { Avatar } from "@/components/ui/avatar";
 import { ListCard } from "@/components/lists/list-card";
+import { FollowButton } from "@/components/users/follow-button";
 import { Film, List } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -43,13 +43,17 @@ export default async function UserProfilePage({ params }: PageProps) {
         },
         orderBy: { updatedAt: "desc" },
       },
-      _count: { select: { lists: true, likes: true } },
+      _count: { select: { lists: true, likes: true, followers: true, following: true } },
+      followers: session?.user?.id
+        ? { where: { followerId: session.user.id }, select: { id: true } }
+        : false,
     },
   });
 
   if (!user) notFound();
 
   const isOwner = session?.user?.id === user.id;
+  const isFollowing = Array.isArray(user.followers) && user.followers.length > 0;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
@@ -67,18 +71,24 @@ export default async function UserProfilePage({ params }: PageProps) {
               <p className="text-zinc-500 text-xs">Списков</p>
             </div>
             <div className="text-center">
-              <p className="text-white font-semibold">{user._count.likes}</p>
-              <p className="text-zinc-500 text-xs">Лайков</p>
+              <p className="text-white font-semibold">{user._count.followers}</p>
+              <p className="text-zinc-500 text-xs">Подписчиков</p>
+            </div>
+            <div className="text-center">
+              <p className="text-white font-semibold">{user._count.following}</p>
+              <p className="text-zinc-500 text-xs">Подписок</p>
             </div>
           </div>
 
-          {isOwner && (
+          {isOwner ? (
             <Link
               href="/profile"
               className="inline-block mt-4 text-sm text-zinc-400 hover:text-white border border-white/10 hover:border-white/20 px-4 py-1.5 rounded-lg transition-colors"
             >
               Редактировать профиль
             </Link>
+          ) : (
+            <FollowButton username={username} initialFollowing={isFollowing} />
           )}
         </div>
       </div>

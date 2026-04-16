@@ -4,6 +4,7 @@ export const translations = {
   ru: {
     // Nav
     home: "Главная",
+    feed: "Лента",
     myLists: "Мои списки",
     addMovie: "Добавить фильм",
     profile: "Профиль",
@@ -183,6 +184,7 @@ export const translations = {
   uk: {
     // Nav
     home: "Головна",
+    feed: "Стрічка",
     myLists: "Мої списки",
     addMovie: "Додати фільм",
     profile: "Профіль",
@@ -362,6 +364,7 @@ export const translations = {
   en: {
     // Nav
     home: "Home",
+    feed: "Feed",
     myLists: "My Lists",
     addMovie: "Add Movie",
     profile: "Profile",
