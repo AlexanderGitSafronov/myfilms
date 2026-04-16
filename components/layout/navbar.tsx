@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n-context";
 import { Locale } from "@/lib/translations";
+import { motion } from "framer-motion";
 
 const LOCALES: { value: Locale; label: string }[] = [
   { value: "ru", label: "RU" },
@@ -45,21 +46,29 @@ export function Navbar() {
           {/* Desktop nav — only for logged in users */}
           {session && (
             <nav className="hidden md:flex items-center gap-1">
-              {navLinks.map(({ href, icon: Icon, label }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={cn(
-                    "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                    pathname === href
-                      ? "bg-white/10 text-white"
-                      : "text-zinc-400 hover:text-white hover:bg-white/5"
-                  )}
-                >
-                  <Icon className="h-4 w-4" />
-                  {label}
-                </Link>
-              ))}
+              {navLinks.map(({ href, icon: Icon, label }) => {
+                const active = pathname === href;
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={cn(
+                      "relative flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                      active ? "text-white" : "text-zinc-400 hover:text-white hover:bg-white/5"
+                    )}
+                  >
+                    {active && (
+                      <motion.span
+                        layoutId="nav-pill"
+                        className="absolute inset-0 rounded-lg bg-white/10"
+                        transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                      />
+                    )}
+                    <Icon className="relative h-4 w-4" />
+                    <span className="relative">{label}</span>
+                  </Link>
+                );
+              })}
             </nav>
           )}
 

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n-context";
+import { motion } from "framer-motion";
 
 interface ListMovie {
   movie: { posterUrl: string | null; title: string };
@@ -37,7 +38,11 @@ export function ListCard({ list, username, isOwner, onDelete }: ListCardProps) {
   const posters = (list.movies || []).map((m) => m.movie.posterUrl).filter(Boolean).slice(0, 4);
 
   return (
-    <div className="group relative rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden hover:border-white/10 transition-all">
+    <motion.div
+      whileHover={{ y: -3, boxShadow: "0 12px 40px rgba(0,0,0,0.5)" }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="group relative rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden hover:border-white/10 transition-colors"
+    >
       {/* Poster collage */}
       <Link href={href}>
         <div className="aspect-[16/7] bg-zinc-900 overflow-hidden relative">
@@ -115,6 +120,6 @@ export function ListCard({ list, username, isOwner, onDelete }: ListCardProps) {
           </span>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

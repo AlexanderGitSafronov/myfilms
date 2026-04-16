@@ -11,6 +11,7 @@ import { ListCard } from "@/components/lists/list-card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/toast";
 import { useI18n } from "@/lib/i18n-context";
+import { StaggerList, StaggerItem, FadeUp } from "@/components/motion";
 
 interface MovieList {
   id: string;
@@ -90,11 +91,11 @@ export default function ListsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="rounded-2xl bg-white/[0.02] border border-white/5 animate-pulse">
-              <div className="aspect-[16/7] bg-white/5" />
+            <div key={i} className="rounded-2xl bg-white/[0.02] border border-white/5">
+              <div className="aspect-[16/7] skeleton rounded-t-2xl" />
               <div className="p-4 space-y-2">
-                <div className="h-4 bg-white/5 rounded w-3/4" />
-                <div className="h-3 bg-white/5 rounded w-1/2" />
+                <div className="h-4 skeleton rounded w-3/4" />
+                <div className="h-3 skeleton rounded w-1/2" />
               </div>
             </div>
           ))}
@@ -174,17 +175,18 @@ export default function ListsPage() {
           </Button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <StaggerList className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {lists.map((list) => (
-            <ListCard
-              key={list.id}
-              list={list}
-              username={session?.user.username}
-              isOwner
-              onDelete={handleDelete}
-            />
+            <StaggerItem key={list.id}>
+              <ListCard
+                list={list}
+                username={session?.user.username}
+                isOwner
+                onDelete={handleDelete}
+              />
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerList>
       )}
     </div>
   );

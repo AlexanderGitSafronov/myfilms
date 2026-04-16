@@ -7,7 +7,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Star, Clock, Rss } from "lucide-react";
+import { Star, Rss } from "lucide-react";
+import { StaggerList, StaggerItem, FadeUp } from "@/components/motion";
 import { formatYear, formatRating, formatDate } from "@/lib/utils";
 
 interface FeedItem {
@@ -50,9 +51,9 @@ export default function FeedPage() {
 
   if (status === "loading" || loading) {
     return (
-      <div className="max-w-2xl mx-auto px-4 py-8 space-y-4 animate-pulse">
+      <div className="max-w-2xl mx-auto px-4 py-8 space-y-4">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-32 bg-white/5 rounded-2xl" />
+          <div key={i} className="h-32 skeleton rounded-2xl" />
         ))}
       </div>
     );
@@ -65,6 +66,7 @@ export default function FeedPage() {
         <h1 className="text-2xl font-bold text-white">Лента</h1>
       </div>
 
+      <FadeUp>
       {items.length === 0 ? (
         <div className="text-center py-20">
           <Rss className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
@@ -80,9 +82,10 @@ export default function FeedPage() {
           </Link>
         </div>
       ) : (
-        <div className="space-y-4">
+        <StaggerList className="space-y-4">
           {items.map((item) => (
-            <div key={item.id} className="rounded-2xl border border-white/10 bg-white/[0.02] p-4">
+            <StaggerItem key={item.id}>
+            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-4 hover:border-white/15 transition-colors">
               {/* Who added */}
               <div className="flex items-center gap-2 mb-3">
                 <Link href={`/${item.list.user.username}`}>
@@ -141,9 +144,11 @@ export default function FeedPage() {
                 </p>
               )}
             </div>
+            </StaggerItem>
           ))}
-        </div>
+        </StaggerList>
       )}
+      </FadeUp>
     </div>
   );
 }

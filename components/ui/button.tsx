@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -31,17 +32,37 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       icon: "h-9 w-9",
     };
 
+    const cls = cn(
+      "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:opacity-50 disabled:pointer-events-none",
+      variants[variant],
+      sizes[size],
+      className
+    );
+
+    if (asChild) {
+      return (
+        <Slot ref={ref} disabled={disabled || loading} className={cls} {...props}>
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              {children}
+            </span>
+          ) : children}
+        </Slot>
+      );
+    }
+
     return (
-      <Comp
+      <motion.button
         ref={ref}
         disabled={disabled || loading}
-        className={cn(
-          "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 disabled:opacity-50 disabled:pointer-events-none",
-          variants[variant],
-          sizes[size],
-          className
-        )}
-        {...props}
+        whileTap={!disabled && !loading ? { scale: 0.96 } : undefined}
+        transition={{ duration: 0.1 }}
+        className={cls}
+        {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
       >
         {loading ? (
           <span className="flex items-center gap-2">
@@ -54,7 +75,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ) : (
           children
         )}
-      </Comp>
+      </motion.button>
     );
   }
 );
