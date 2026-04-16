@@ -125,10 +125,11 @@ export default function ProfilePage() {
         <h1 className="text-2xl font-bold text-white">{t("myProfileTitle")}</h1>
         <Link
           href={`/${profile.username}`}
-          className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
+          className="flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5 flex-shrink-0"
+          title={t("viewPublicProfile")}
         >
-          <ExternalLink className="h-3.5 w-3.5" />
-          {t("viewPublicProfile")}
+          <ExternalLink className="h-4 w-4" />
+          <span className="hidden sm:inline">{t("viewPublicProfile")}</span>
         </Link>
       </div>
 
