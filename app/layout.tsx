@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Suspense } from "react";
 import { SessionProvider } from "next-auth/react";
 import { ToastProvider } from "@/components/ui/toast";
 import { Navbar, MobileNav } from "@/components/layout/navbar";
 import { PWARegister } from "@/components/pwa-register";
 import { I18nProvider } from "@/lib/i18n-context";
+import { NavigationProgress } from "@/components/ui/navigation-progress";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -47,6 +49,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <I18nProvider>
         <SessionProvider>
           <ToastProvider>
+            <Suspense fallback={null}>
+              <NavigationProgress />
+            </Suspense>
             <Navbar />
             <main className="flex-1 pb-20 md:pb-0">
               {children}
