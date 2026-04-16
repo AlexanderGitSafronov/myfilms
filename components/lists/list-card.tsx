@@ -41,11 +41,11 @@ export function ListCard({ list, username, isOwner, onDelete }: ListCardProps) {
     <motion.div
       whileHover={{ y: -3, boxShadow: "0 12px 40px rgba(0,0,0,0.5)" }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="group relative rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden hover:border-white/10 transition-colors"
+      className="group relative rounded-2xl border border-white/5 bg-white/[0.02] hover:border-white/10 transition-colors"
     >
       {/* Poster collage */}
       <Link href={href}>
-        <div className="aspect-[16/7] bg-zinc-900 overflow-hidden relative">
+        <div className="aspect-[16/7] bg-zinc-900 overflow-hidden relative rounded-t-2xl">
           {posters.length > 0 ? (
             <div className={cn("grid h-full", posters.length === 1 ? "grid-cols-1" : posters.length === 2 ? "grid-cols-2" : "grid-cols-4")}>
               {posters.map((url, i) => (
@@ -77,31 +77,34 @@ export function ListCard({ list, username, isOwner, onDelete }: ListCardProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setMenuOpen(!menuOpen)}
-                className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity text-zinc-500"
+                onClick={(e) => { e.preventDefault(); setMenuOpen(!menuOpen); }}
+                className="h-8 w-8 text-zinc-500 hover:text-white opacity-60 group-hover:opacity-100 transition-opacity"
               >
                 <MoreVertical className="h-4 w-4" />
               </Button>
               {menuOpen && (
                 <>
-                  <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
-                  <div className="absolute right-0 mt-1 w-44 rounded-xl bg-zinc-900 border border-white/10 shadow-xl z-20 py-1 overflow-hidden">
+                  <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+                  <div className="absolute right-0 bottom-full mb-1 w-48 rounded-xl bg-zinc-900 border border-white/10 shadow-2xl z-50 py-1">
                     <Link
                       href={`/lists/${list.id}/edit`}
-                      className="flex items-center gap-2 px-3 py-2 text-sm text-zinc-300 hover:text-white hover:bg-white/5"
+                      className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition-colors"
                       onClick={() => setMenuOpen(false)}
                     >
-                      <Edit className="h-4 w-4" />
+                      <Edit className="h-4 w-4 flex-shrink-0" />
                       {t("editDetails")}
                     </Link>
                     {onDelete && (
-                      <button
-                        onClick={() => { onDelete(list.id); setMenuOpen(false); }}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-white/5"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                        {t("remove")}
-                      </button>
+                      <>
+                        <div className="my-1 border-t border-white/5" />
+                        <button
+                          onClick={() => { onDelete(list.id); setMenuOpen(false); }}
+                          className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 transition-colors"
+                        >
+                          <Trash2 className="h-4 w-4 flex-shrink-0" />
+                          {t("remove")}
+                        </button>
+                      </>
                     )}
                   </div>
                 </>
