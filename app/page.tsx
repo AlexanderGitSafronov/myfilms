@@ -6,6 +6,7 @@ import { getTrendingMovies, getPosterUrl } from "@/lib/tmdb";
 import { Button } from "@/components/ui/button";
 import { Film, ArrowRight, Users, List, Share2, Rss } from "lucide-react";
 import { FadeUp, StaggerList, StaggerItem } from "@/components/motion";
+import { MovieMarquee } from "@/components/home/movie-marquee";
 
 async function getTrendingPosters() {
   try {
@@ -125,45 +126,67 @@ export default async function HomePage() {
 
   // Landing page
   return (
-    <div className="relative overflow-hidden">
-      {/* Background poster wall */}
-      <div className="absolute inset-0 -top-16 overflow-hidden pointer-events-none select-none">
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/80 to-black z-10" />
-        <div className="grid grid-cols-6 gap-1 opacity-15 -rotate-3 scale-110">
-          {movies.concat(movies).map((movie, i) => (
-            <div key={i} className="aspect-[2/3] rounded-sm overflow-hidden relative">
-              {movie.posterUrl && (
-                <Image src={movie.posterUrl} alt={movie.title} fill className="object-cover" />
-              )}
-            </div>
-          ))}
-        </div>
+    <div className="relative min-h-screen overflow-hidden bg-black">
+
+      {/* ── Aurora glow blobs (CSS animated, GPU only) ── */}
+      <div className="pointer-events-none select-none absolute inset-0 overflow-hidden z-0">
+        <div
+          className="absolute w-[700px] h-[700px] rounded-full opacity-[0.12]"
+          style={{
+            background: "radial-gradient(circle, #dc2626 0%, #7f1d1d 50%, transparent 70%)",
+            top: "5%", left: "20%",
+            animation: "aurora 18s ease-in-out infinite",
+            filter: "blur(60px)",
+          }}
+        />
+        <div
+          className="absolute w-[500px] h-[500px] rounded-full opacity-[0.08]"
+          style={{
+            background: "radial-gradient(circle, #ef4444 0%, #dc2626 40%, transparent 70%)",
+            top: "30%", right: "10%",
+            animation: "aurora2 22s ease-in-out infinite",
+            filter: "blur(80px)",
+          }}
+        />
+        <div
+          className="absolute w-[400px] h-[400px] rounded-full opacity-[0.06]"
+          style={{
+            background: "radial-gradient(circle, #b91c1c 0%, transparent 70%)",
+            bottom: "10%", left: "40%",
+            animation: "aurora 28s ease-in-out infinite reverse",
+            filter: "blur(100px)",
+          }}
+        />
       </div>
 
-      {/* Hero */}
-      <div className="relative z-20 max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16 text-center">
+      {/* ── Hero ── */}
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 pt-20 pb-12 text-center">
         <FadeUp>
-          <div className="inline-flex items-center gap-2 bg-red-600/10 border border-red-600/25 rounded-full px-4 py-1.5 mb-8">
+          <div className="inline-flex items-center gap-2 bg-red-600/10 border border-red-600/25 rounded-full px-4 py-1.5 mb-8 backdrop-blur-sm">
             <Film className="h-3.5 w-3.5 text-red-400" />
             <span className="text-sm text-red-400 font-medium">Рекомендации фильмов — просто</span>
           </div>
         </FadeUp>
+
         <FadeUp delay={0.08}>
-          <h1 className="text-5xl sm:text-7xl font-bold text-white leading-[1.1] mb-6 tracking-tight">
+          <h1 className="text-5xl sm:text-7xl font-bold text-white leading-[1.05] mb-6 tracking-tight">
             Делитесь<br />
             любимыми фильмами<br />
             <span className="gradient-text-red">с друзьями</span>
           </h1>
         </FadeUp>
+
         <FadeUp delay={0.15}>
-          <p className="text-xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            Создавайте подборки фильмов, следите за тем, что смотрят друзья, и никогда не забывайте рекомендации.
+          <p className="text-lg sm:text-xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Создавайте подборки фильмов, следите за тем, что смотрят друзья,
+            и никогда не забывайте рекомендации.
           </p>
         </FadeUp>
+
         <FadeUp delay={0.2}>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/register">
-              <Button size="lg" className="w-full sm:w-auto glow-red">
+              <Button size="lg" className="w-full sm:w-auto" style={{ boxShadow: "0 0 30px rgba(220,38,38,0.35), 0 0 60px rgba(220,38,38,0.1)" }}>
                 Начать бесплатно
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -177,16 +200,28 @@ export default async function HomePage() {
         </FadeUp>
       </div>
 
-      {/* Features */}
-      <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 py-20">
+      {/* ── Infinite scrolling poster rows ── */}
+      {movies.length > 0 && (
+        <div className="relative z-10 py-4" style={{ maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)" }}>
+          <MovieMarquee movies={movies} />
+        </div>
+      )}
+
+      {/* ── Features ── */}
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 py-20">
+        <FadeUp>
+          <p className="text-center text-zinc-500 text-sm uppercase tracking-widest mb-10 font-medium">
+            Всё что нужно для кино-коллекции
+          </p>
+        </FadeUp>
         <StaggerList className="grid sm:grid-cols-3 gap-5">
           {[
             { icon: List,   title: "Организация", desc: "Создавайте списки: «Хочу посмотреть», «Любимые», «Советую друзьям»." },
-            { icon: Film,   title: "Поиск",       desc: "Вставьте ссылку с любого сайта — мы автоматически получим название, постер и описание фильма." },
+            { icon: Film,   title: "Любой сайт",  desc: "Вставьте ссылку с Multiplex, Megogo, IMDB или любого другого сайта — постер и описание подтянутся сами." },
             { icon: Share2, title: "Поделиться",  desc: "Отправьте публичную ссылку на любой список. Друзья увидят всё, что вы рекомендуете." },
           ].map(({ icon: Icon, title, desc }) => (
             <StaggerItem key={title}>
-              <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-6 h-full hover:border-white/15 transition-colors">
+              <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-6 h-full hover:border-white/15 hover:bg-white/[0.05] transition-all duration-300 backdrop-blur-sm">
                 <div className="h-10 w-10 rounded-xl bg-red-600/10 border border-red-600/20 flex items-center justify-center mb-4">
                   <Icon className="h-5 w-5 text-red-400" />
                 </div>
@@ -197,33 +232,6 @@ export default async function HomePage() {
           ))}
         </StaggerList>
       </div>
-
-      {/* Trending */}
-      {movies.length > 0 && (
-        <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 pb-20">
-          <FadeUp>
-            <h2 className="text-xl font-semibold text-white mb-4">Популярно на этой неделе</h2>
-          </FadeUp>
-          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-2">
-            {movies.map((movie, i) => (
-              <div
-                key={movie.id}
-                className="aspect-[2/3] rounded-lg overflow-hidden bg-zinc-900 relative group"
-                style={{ animationDelay: `${i * 30}ms` }}
-              >
-                {movie.posterUrl && (
-                  <Image
-                    src={movie.posterUrl}
-                    alt={movie.title}
-                    fill
-                    className="object-cover group-hover:scale-110 transition-transform duration-500 opacity-70 group-hover:opacity-100"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
