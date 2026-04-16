@@ -5,8 +5,8 @@ import { z } from "zod";
 
 const updateProfileSchema = z.object({
   name: z.string().min(1).max(50).optional(),
-  bio: z.string().max(200).optional(),
-  image: z.string().url().optional(),
+  bio: z.string().max(200).optional().nullable(),
+  image: z.string().url().optional().nullable(),
 });
 
 export async function GET() {

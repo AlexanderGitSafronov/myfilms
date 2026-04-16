@@ -162,6 +162,17 @@ export const translations = {
     noPublicLists: "Нет публичных списков",
     editProfileBtn: "Редактировать профиль",
 
+    // Movie page
+    back: "Назад",
+    movieNotFound: "Фильм не найден",
+    movieOverview: "Описание",
+    comments: "Комментарии",
+    commentPlaceholder: "Поделитесь мнением...",
+    commentAdded: "Комментарий добавлен!",
+    noComments: "Комментариев пока нет. Будьте первым!",
+    loginToLike: "Войдите, чтобы ставить лайки",
+    source: "Источник",
+
     // Language
     language: "Язык",
     langRu: "Русский",
@@ -330,6 +341,17 @@ export const translations = {
     noPublicLists: "Немає публічних списків",
     editProfileBtn: "Редагувати профіль",
 
+    // Movie page
+    back: "Назад",
+    movieNotFound: "Фільм не знайдено",
+    movieOverview: "Опис",
+    comments: "Коментарі",
+    commentPlaceholder: "Поділіться думкою...",
+    commentAdded: "Коментар додано!",
+    noComments: "Коментарів ще немає. Будьте першим!",
+    loginToLike: "Увійдіть, щоб ставити вподобання",
+    source: "Джерело",
+
     // Language
     language: "Мова",
     langRu: "Русский",
@@ -497,6 +519,17 @@ export const translations = {
     // User page
     noPublicLists: "No public lists",
     editProfileBtn: "Edit profile",
+
+    // Movie page
+    back: "Back",
+    movieNotFound: "Movie not found",
+    movieOverview: "Overview",
+    comments: "Comments",
+    commentPlaceholder: "Share your thoughts...",
+    commentAdded: "Comment added!",
+    noComments: "No comments yet. Be the first!",
+    loginToLike: "Sign in to like movies",
+    source: "Source",
 
     // Language
     language: "Language",

@@ -6,20 +6,20 @@ import { z } from "zod";
 
 const addMovieSchema = z.object({
   listId: z.string(),
-  tmdbId: z.number().optional(),
+  tmdbId: z.number().optional().nullable(),
   title: z.string().min(1),
-  originalTitle: z.string().optional(),
-  overview: z.string().optional(),
+  originalTitle: z.string().optional().nullable(),
+  overview: z.string().optional().nullable(),
   posterUrl: z.string().url().optional().nullable(),
   backdropUrl: z.string().url().optional().nullable(),
-  releaseDate: z.string().optional(),
-  rating: z.number().optional(),
-  voteCount: z.number().optional(),
-  genres: z.array(z.string()).optional(),
-  runtime: z.number().optional(),
-  language: z.string().optional(),
+  releaseDate: z.string().optional().nullable(),
+  rating: z.number().optional().nullable(),
+  voteCount: z.number().optional().nullable(),
+  genres: z.array(z.string()).optional().nullable(),
+  runtime: z.number().optional().nullable(),
+  language: z.string().optional().nullable(),
   sourceUrl: z.string().url().optional().nullable(),
-  note: z.string().optional(),
+  note: z.string().optional().nullable(),
 });
 
 export async function POST(req: Request) {
@@ -61,8 +61,9 @@ export async function POST(req: Request) {
       movie = await prisma.movie.create({
         data: {
           ...movieData,
+          tmdbId: movieData.tmdbId ?? null,
           posterUrl: cloudinaryPosterUrl,
-          genres: movieData.genres || [],
+          genres: movieData.genres ?? [],
         },
       });
     }

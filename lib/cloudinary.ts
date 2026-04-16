@@ -11,6 +11,8 @@ export async function uploadImageFromUrl(
   folder: string = "myfilms/posters"
 ): Promise<string | null> {
   try {
+    const parsed = new URL(imageUrl);
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") return null;
     const result = await cloudinary.uploader.upload(imageUrl, {
       folder,
       transformation: [{ width: 500, crop: "limit" }, { quality: "auto" }],

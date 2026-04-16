@@ -59,7 +59,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
   }, [id]);
 
   async function handleLike() {
-    if (!session) { toast("Войдите, чтобы ставить лайки", "info"); return; }
+    if (!session) { toast(t("loginToLike"), "info"); return; }
     const res = await fetch(`/api/movies/${id}/like`, { method: "POST" });
     if (res.ok) {
       const data = await res.json();
@@ -83,7 +83,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
       const data = await res.json();
       setMovie((m) => m ? { ...m, comments: [data.comment, ...m.comments] } : m);
       setComment("");
-      toast("Комментарий добавлен!", "success");
+      toast(t("commentAdded"), "success");
     }
     setPosting(false);
   }
@@ -101,7 +101,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
   if (!movie) {
     return (
       <div className="flex items-center justify-center min-h-64">
-        <p className="text-zinc-400">Фильм не найден</p>
+        <p className="text-zinc-400">{t("movieNotFound")}</p>
       </div>
     );
   }
@@ -110,7 +110,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       <button onClick={() => history.back()} className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-white transition-colors mb-6">
         <ArrowLeft className="h-3.5 w-3.5" />
-        Назад
+        {t("back")}
       </button>
 
       {/* Hero */}
@@ -181,7 +181,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
                   className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm bg-white/5 text-zinc-400 hover:text-white border border-white/10 transition-colors"
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
-                  Источник
+                  {t("source")}
                 </a>
               )}
             </div>
@@ -192,7 +192,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
       {/* Overview */}
       {movie.overview && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-white mb-3">Описание</h2>
+          <h2 className="text-lg font-semibold text-white mb-3">{t("movieOverview")}</h2>
           <p className="text-zinc-300 leading-relaxed">{movie.overview}</p>
         </div>
       )}
@@ -200,7 +200,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
       {/* Comments */}
       <div>
         <h2 className="text-lg font-semibold text-white mb-4">
-          Комментарии ({movie.comments.length})
+          {t("comments")} ({movie.comments.length})
         </h2>
 
         {session && (
@@ -208,7 +208,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
             <Avatar src={session.user.image} name={session.user.name} size="sm" className="flex-shrink-0 mt-0.5" />
             <div className="flex-1 flex gap-2">
               <Textarea
-                placeholder="Поделитесь мнением..."
+                placeholder={t("commentPlaceholder")}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 rows={1}
@@ -222,7 +222,7 @@ export default function MoviePage({ params }: { params: Promise<{ id: string }> 
         )}
 
         {movie.comments.length === 0 ? (
-          <p className="text-zinc-500 text-sm py-8 text-center">Комментариев пока нет. Будьте первым!</p>
+          <p className="text-zinc-500 text-sm py-8 text-center">{t("noComments")}</p>
         ) : (
           <div className="space-y-4">
             {movie.comments.map((c) => (

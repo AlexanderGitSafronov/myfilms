@@ -33,8 +33,8 @@ export async function PATCH(
 
   await Promise.all(
     parsed.data.items.map((item) =>
-      prisma.listMovie.update({
-        where: { id: item.id },
+      prisma.listMovie.updateMany({
+        where: { id: item.id, listId },
         data: { order: item.order },
       })
     )
