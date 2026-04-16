@@ -5,10 +5,8 @@ const nextConfig: NextConfig = {
   typescript: { ignoreBuildErrors: true },
   images: {
     remotePatterns: [
-      { protocol: "https", hostname: "image.tmdb.org" },
-      { protocol: "https", hostname: "res.cloudinary.com" },
-      { protocol: "https", hostname: "lh3.googleusercontent.com" },
-      { protocol: "https", hostname: "avatars.githubusercontent.com" },
+      { protocol: "https", hostname: "**" },
+      { protocol: "http", hostname: "**" },
     ],
   },
   // PWA service worker is handled manually via public/sw.js
