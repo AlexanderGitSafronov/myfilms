@@ -57,8 +57,16 @@ self.addEventListener("fetch", (event) => {
           if (cached) return cached;
           // Return offline page for navigation requests
           if (event.request.mode === "navigate") {
-            return caches.match("/offline");
+            return caches.match("/offline").then((offlinePage) => {
+              if (offlinePage) return offlinePage;
+              // Fallback if offline page isn't cached yet
+              return new Response(
+                '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Offline</title><style>body{background:#000;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0;text-align:center}</style></head><body><div><h1>You\'re offline</h1><p>Check your connection and try again.</p><button onclick="location.reload()">Retry</button></div></body></html>',
+                { status: 503, headers: { "Content-Type": "text/html" } }
+              );
+            });
           }
+          return new Response("", { status: 408 });
         })
       )
   );

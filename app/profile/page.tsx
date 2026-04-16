@@ -49,9 +49,12 @@ export default function ProfilePage() {
       fetch("/api/profile")
         .then((r) => r.json())
         .then((d) => {
-          setProfile(d.user);
-          setForm({ name: d.user.name || "", bio: d.user.bio || "" });
-        });
+          if (d.user) {
+            setProfile(d.user);
+            setForm({ name: d.user.name || "", bio: d.user.bio || "" });
+          }
+        })
+        .catch(() => {});
     }
   }, [session]);
 

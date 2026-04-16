@@ -19,7 +19,14 @@ export async function GET() {
     where: { id: session.user.id },
     include: {
       lists: {
-        include: { _count: { select: { movies: true } } },
+        include: {
+          _count: { select: { movies: true } },
+          movies: {
+            take: 4,
+            include: { movie: { select: { posterUrl: true, title: true } } },
+            orderBy: { order: "asc" },
+          },
+        },
         orderBy: { updatedAt: "desc" },
       },
       _count: { select: { lists: true, likes: true } },
