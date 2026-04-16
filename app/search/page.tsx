@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatYear, formatRating } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n-context";
 
 interface SearchResult {
   tmdbId: number;
@@ -24,6 +25,7 @@ interface SearchResult {
 function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { t } = useI18n();
   const [query, setQuery] = useState(searchParams.get("q") || "");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [searching, setSearching] = useState(false);
@@ -60,12 +62,12 @@ function SearchContent() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white mb-4">Search Movies</h1>
+        <h1 className="text-2xl font-bold text-white mb-4">{t("searchMovies")}</h1>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
           <Input
             className="pl-10"
-            placeholder="Search for any movie..."
+            placeholder={t("searchPlaceholder")}
             value={query}
             onChange={(e) => handleInput(e.target.value)}
             autoFocus
@@ -114,7 +116,7 @@ function SearchContent() {
                 <Link href={`/add-movie?q=${encodeURIComponent(movie.title)}`}>
                   <Button size="sm" className="text-xs">
                     <Plus className="h-3.5 w-3.5 mr-1" />
-                    Add
+                    {t("add")}
                   </Button>
                 </Link>
               </div>
@@ -124,12 +126,12 @@ function SearchContent() {
       ) : query && !searching ? (
         <div className="text-center py-16 text-zinc-500">
           <Search className="h-10 w-10 mx-auto mb-3 opacity-40" />
-          <p>No results for &quot;{query}&quot;</p>
+          <p>{t("noResults")} &quot;{query}&quot;</p>
         </div>
       ) : !query ? (
         <div className="text-center py-16 text-zinc-600">
           <Search className="h-10 w-10 mx-auto mb-3 opacity-40" />
-          <p>Start typing to search for movies</p>
+          <p>{t("startTyping")}</p>
         </div>
       ) : null}
     </div>

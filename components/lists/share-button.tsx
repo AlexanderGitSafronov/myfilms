@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Share2, Check } from "lucide-react";
+import { useI18n } from "@/lib/i18n-context";
 
 interface ShareButtonProps {
   url: string;
@@ -10,6 +11,7 @@ interface ShareButtonProps {
 
 export function ShareButton({ url, listName }: ShareButtonProps) {
   const [copied, setCopied] = useState(false);
+  const { t } = useI18n();
 
   async function handleShare() {
     if (navigator.share) {
@@ -27,7 +29,7 @@ export function ShareButton({ url, listName }: ShareButtonProps) {
       className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg"
     >
       {copied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Share2 className="h-3.5 w-3.5" />}
-      {copied ? "Скопировано!" : "Поделиться"}
+      {copied ? t("copied") : t("shareList")}
     </button>
   );
 }

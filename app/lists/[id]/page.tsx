@@ -3,10 +3,11 @@
 import { useState, useEffect, useCallback, use } from "react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
-import { Share2, Plus, Lock, Globe, ArrowLeft, Copy, Check } from "lucide-react";
+import { Share2, Plus, Lock, Globe, ArrowLeft, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { MovieCard } from "@/components/movies/movie-card";
 import { useToast } from "@/components/ui/toast";
+import { useI18n } from "@/lib/i18n-context";
 import {
   DndContext,
   closestCenter,
@@ -92,6 +93,7 @@ export default function ListDetailPage({ params }: { params: Promise<{ id: strin
   const { id } = use(params);
   const { data: session } = useSession();
   const { toast } = useToast();
+  const { t } = useI18n();
   const [list, setList] = useState<MovieList | null>(null);
   const [isOwner, setIsOwner] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -120,9 +122,9 @@ export default function ListDetailPage({ params }: { params: Promise<{ id: strin
     const res = await fetch(`/api/movies/${movieId}?listId=${id}`, { method: "DELETE" });
     if (res.ok) {
       setList((l) => l ? { ...l, movies: l.movies.filter((m) => m.id !== listMovieId) } : l);
-      toast("Movie removed", "success");
+      toast(t("movieRemoved"), "success");
     } else {
-      toast("Failed to remove movie", "error");
+      toast(t("failedToRemove"), "error");
     }
   }
 
@@ -152,7 +154,7 @@ export default function ListDetailPage({ params }: { params: Promise<{ id: strin
     const url = `${window.location.origin}/${list?.user.username}/${list?.slug}`;
     await navigator.clipboard.writeText(url);
     setCopied(true);
-    toast("Link copied to clipboard!", "success");
+    toast(t("linkCopied"), "success");
     setTimeout(() => setCopied(false), 2000);
   }
 
@@ -173,18 +175,17 @@ export default function ListDetailPage({ params }: { params: Promise<{ id: strin
   if (!list) {
     return (
       <div className="flex items-center justify-center min-h-64">
-        <p className="text-zinc-400">List not found</p>
+        <p className="text-zinc-400">{t("listNotFound")}</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-      {/* Header */}
       <div className="mb-8">
         <Link href="/lists" className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-white transition-colors mb-4">
           <ArrowLeft className="h-3.5 w-3.5" />
-          My Lists
+          {t("backToLists")}
         </Link>
 
         <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -197,7 +198,7 @@ export default function ListDetailPage({ params }: { params: Promise<{ id: strin
             </div>
             {list.description && <p className="text-zinc-400 text-sm">{list.description}</p>}
             <p className="text-sm text-zinc-500 mt-1">
-              {list._count.movies} {list._count.movies === 1 ? "film" : "films"}
+              {list._count.movies} {t("films")}
             </p>
           </div>
 
@@ -206,29 +207,28 @@ export default function ListDetailPage({ params }: { params: Promise<{ id: strin
               <Link href="/add-movie">
                 <Button size="sm">
                   <Plus className="h-4 w-4 mr-1.5" />
-                  Add Movie
+                  {t("addMovie")}
                 </Button>
               </Link>
             )}
             {list.isPublic && (
               <Button size="sm" variant="outline" onClick={handleShare}>
                 {copied ? <Check className="h-4 w-4 mr-1.5" /> : <Share2 className="h-4 w-4 mr-1.5" />}
-                {copied ? "Copied!" : "Share"}
+                {copied ? t("copied") : t("share")}
               </Button>
             )}
           </div>
         </div>
       </div>
 
-      {/* Movies */}
       {list.movies.length === 0 ? (
         <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-16 text-center">
-          <p className="text-zinc-400 mb-4">No movies in this list yet</p>
+          <p className="text-zinc-400 mb-4">{t("noMoviesInList")}</p>
           {isOwner && (
             <Link href="/add-movie">
               <Button>
                 <Plus className="h-4 w-4 mr-2" />
-                Add a movie
+                {t("addAMovieBtn")}
               </Button>
             </Link>
           )}

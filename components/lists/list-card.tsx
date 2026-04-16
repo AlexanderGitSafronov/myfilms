@@ -6,6 +6,7 @@ import { Lock, Globe, Film, MoreVertical, Trash2, Edit } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n-context";
 
 interface ListMovie {
   movie: { posterUrl: string | null; title: string };
@@ -31,8 +32,9 @@ interface ListCardProps {
 
 export function ListCard({ list, username, isOwner, onDelete }: ListCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useI18n();
   const href = username ? `/${username}/${list.slug}` : `/lists/${list.id}`;
-  const posters = list.movies.map((m) => m.movie.posterUrl).filter(Boolean).slice(0, 4);
+  const posters = (list.movies || []).map((m) => m.movie.posterUrl).filter(Boolean).slice(0, 4);
 
   return (
     <div className="group relative rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden hover:border-white/10 transition-all">
@@ -85,7 +87,7 @@ export function ListCard({ list, username, isOwner, onDelete }: ListCardProps) {
                       onClick={() => setMenuOpen(false)}
                     >
                       <Edit className="h-4 w-4" />
-                      Edit list
+                      {t("editDetails")}
                     </Link>
                     {onDelete && (
                       <button
@@ -93,7 +95,7 @@ export function ListCard({ list, username, isOwner, onDelete }: ListCardProps) {
                         className="flex w-full items-center gap-2 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-white/5"
                       >
                         <Trash2 className="h-4 w-4" />
-                        Delete list
+                        {t("remove")}
                       </button>
                     )}
                   </div>
@@ -105,11 +107,11 @@ export function ListCard({ list, username, isOwner, onDelete }: ListCardProps) {
 
         <div className="flex items-center gap-3 mt-2">
           <span className="text-xs text-zinc-500">
-            {list._count.movies} {list._count.movies === 1 ? "film" : "films"}
+            {list._count.movies} {t("films")}
           </span>
           <span className="flex items-center gap-1 text-xs text-zinc-600">
             {list.isPublic ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
-            {list.isPublic ? "Public" : "Private"}
+            {list.isPublic ? t("public") : t("private")}
           </span>
         </div>
       </div>

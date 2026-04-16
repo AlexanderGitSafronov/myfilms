@@ -7,9 +7,11 @@ import { signIn } from "next-auth/react";
 import { Film } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useI18n } from "@/lib/i18n-context";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [form, setForm] = useState({ name: "", username: "", email: "", password: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -23,15 +25,14 @@ export default function RegisterPage() {
     e.preventDefault();
     setErrors({});
 
-    // Basic validation
     const newErrors: Record<string, string> = {};
-    if (!form.name) newErrors.name = "Name is required";
-    if (!form.username) newErrors.username = "Username is required";
-    else if (!/^[a-z0-9_]+$/.test(form.username)) newErrors.username = "Only lowercase letters, numbers, and underscores";
-    else if (form.username.length < 3) newErrors.username = "At least 3 characters";
-    if (!form.email) newErrors.email = "Email is required";
-    if (!form.password) newErrors.password = "Password is required";
-    else if (form.password.length < 6) newErrors.password = "At least 6 characters";
+    if (!form.name) newErrors.name = t("nameRequired");
+    if (!form.username) newErrors.username = t("usernameRequired");
+    else if (!/^[a-z0-9_]+$/.test(form.username)) newErrors.username = t("usernameInvalid");
+    else if (form.username.length < 3) newErrors.username = t("usernameShort");
+    if (!form.email) newErrors.email = t("emailRequired");
+    if (!form.password) newErrors.password = t("passwordRequired");
+    else if (form.password.length < 6) newErrors.password = t("passwordShort");
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -50,12 +51,11 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setErrors({ general: data.error || "Registration failed" });
+        setErrors({ general: data.error || t("somethingWentWrong") });
         setLoading(false);
         return;
       }
 
-      // Auto-login
       await signIn("credentials", {
         email: form.email,
         password: form.password,
@@ -65,7 +65,7 @@ export default function RegisterPage() {
       router.push("/");
       router.refresh();
     } catch {
-      setErrors({ general: "Something went wrong. Please try again." });
+      setErrors({ general: t("somethingWentWrong") });
       setLoading(false);
     }
   }
@@ -84,8 +84,8 @@ export default function RegisterPage() {
         </div>
 
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-white">Create your account</h1>
-          <p className="text-zinc-400 mt-1">Start sharing movie recommendations</p>
+          <h1 className="text-2xl font-bold text-white">{t("createAccount")}</h1>
+          <p className="text-zinc-400 mt-1">{t("startSharing")}</p>
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-8">
@@ -96,7 +96,7 @@ export default function RegisterPage() {
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
             </svg>
-            Continue with Google
+            {t("continueWithGoogleReg")}
           </Button>
 
           <div className="relative mb-6">
@@ -104,27 +104,27 @@ export default function RegisterPage() {
               <div className="w-full border-t border-white/10" />
             </div>
             <div className="relative flex justify-center text-xs text-zinc-500">
-              <span className="bg-zinc-950 px-3">or register with email</span>
+              <span className="bg-zinc-950 px-3">{t("orRegisterWithEmail")}</span>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input
-              label="Full name"
+              label={t("fullName")}
               placeholder="Alex Smith"
               value={form.name}
               onChange={(e) => update("name", e.target.value)}
               error={errors.name}
             />
             <Input
-              label="Username"
+              label={t("username")}
               placeholder="alex_smith"
               value={form.username}
               onChange={(e) => update("username", e.target.value.toLowerCase())}
               error={errors.username}
             />
             <Input
-              label="Email"
+              label={t("email")}
               type="email"
               placeholder="you@example.com"
               value={form.email}
@@ -132,9 +132,9 @@ export default function RegisterPage() {
               error={errors.email}
             />
             <Input
-              label="Password"
+              label={t("password")}
               type="password"
-              placeholder="At least 6 characters"
+              placeholder={t("atLeast6Chars")}
               value={form.password}
               onChange={(e) => update("password", e.target.value)}
               error={errors.password}
@@ -147,15 +147,15 @@ export default function RegisterPage() {
             )}
 
             <Button type="submit" className="w-full" loading={loading}>
-              Create account
+              {t("createAccountBtn")}
             </Button>
           </form>
         </div>
 
         <p className="text-center text-sm text-zinc-500 mt-6">
-          Already have an account?{" "}
+          {t("alreadyHaveAccount")}{" "}
           <Link href="/login" className="text-red-400 hover:text-red-300 font-medium">
-            Sign in
+            {t("signIn")}
           </Link>
         </p>
       </div>

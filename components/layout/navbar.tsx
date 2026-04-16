@@ -3,20 +3,30 @@
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
-import { Film, Plus, List, User, LogOut, Home, Search } from "lucide-react";
+import { Film, Plus, List, User, LogOut, Home, Search, Languages } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useI18n } from "@/lib/i18n-context";
+import { Locale } from "@/lib/translations";
+
+const LOCALES: { value: Locale; label: string }[] = [
+  { value: "ru", label: "RU" },
+  { value: "uk", label: "UK" },
+  { value: "en", label: "EN" },
+];
 
 export function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const { t, locale, setLocale } = useI18n();
 
   const navLinks = [
-    { href: "/", icon: Home, label: "Home" },
-    { href: "/lists", icon: List, label: "My Lists" },
-    { href: "/add-movie", icon: Plus, label: "Add Movie" },
+    { href: "/", icon: Home, label: t("home") },
+    { href: "/lists", icon: List, label: t("myLists") },
+    { href: "/add-movie", icon: Plus, label: t("addMovie") },
   ];
 
   return (
@@ -51,13 +61,45 @@ export function Navbar() {
           </nav>
 
           {/* Right side */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <Link
               href="/search"
               className="p-2 text-zinc-400 hover:text-white transition-colors"
             >
               <Search className="h-5 w-5" />
             </Link>
+
+            {/* Language switcher */}
+            <div className="relative">
+              <button
+                onClick={() => setLangOpen(!langOpen)}
+                className="flex items-center gap-1.5 p-2 text-zinc-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+              >
+                <Languages className="h-4 w-4" />
+                <span className="text-xs font-medium hidden sm:block">{locale.toUpperCase()}</span>
+              </button>
+              {langOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setLangOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-32 rounded-xl bg-zinc-900 border border-white/10 shadow-2xl z-20 py-1 overflow-hidden">
+                    {LOCALES.map(({ value, label }) => (
+                      <button
+                        key={value}
+                        onClick={() => { setLocale(value); setLangOpen(false); }}
+                        className={cn(
+                          "w-full text-left px-4 py-2 text-sm transition-colors",
+                          locale === value
+                            ? "text-red-400 bg-white/5"
+                            : "text-zinc-300 hover:text-white hover:bg-white/5"
+                        )}
+                      >
+                        {t(value === "ru" ? "langRu" : value === "uk" ? "langUk" : "langEn")}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
 
             {session ? (
               <div className="relative">
@@ -81,14 +123,14 @@ export function Navbar() {
                         className="flex items-center gap-2 px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition-colors"
                       >
                         <User className="h-4 w-4" />
-                        Profile
+                        {t("profile")}
                       </Link>
                       <button
                         onClick={() => { signOut(); setMenuOpen(false); }}
                         className="flex w-full items-center gap-2 px-4 py-2.5 text-sm text-zinc-300 hover:text-white hover:bg-white/5 transition-colors"
                       >
                         <LogOut className="h-4 w-4" />
-                        Sign out
+                        {t("signOut")}
                       </button>
                     </div>
                   </>
@@ -99,7 +141,7 @@ export function Navbar() {
                 href="/login"
                 className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
               >
-                Sign in
+                {t("signIn")}
               </Link>
             )}
           </div>
@@ -113,12 +155,13 @@ export function Navbar() {
 export function MobileNav() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const { t } = useI18n();
 
   const links = [
-    { href: "/", icon: Home, label: "Home" },
-    { href: "/lists", icon: List, label: "Lists" },
-    { href: "/add-movie", icon: Plus, label: "Add" },
-    { href: session ? "/profile" : "/login", icon: User, label: "Profile" },
+    { href: "/", icon: Home, label: t("home") },
+    { href: "/lists", icon: List, label: t("myLists") },
+    { href: "/add-movie", icon: Plus, label: t("addMovie") },
+    { href: session ? "/profile" : "/login", icon: User, label: t("profile") },
   ];
 
   return (

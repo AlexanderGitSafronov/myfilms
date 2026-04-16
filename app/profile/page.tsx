@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar } from "@/components/ui/avatar";
 import { ListCard } from "@/components/lists/list-card";
 import { useToast } from "@/components/ui/toast";
+import { useI18n } from "@/lib/i18n-context";
 
 interface UserProfile {
   id: string;
@@ -35,6 +36,7 @@ export default function ProfilePage() {
   const { data: session, status, update } = useSession();
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useI18n();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -73,9 +75,9 @@ export default function ProfilePage() {
       setProfile((p) => p ? { ...p, ...data.user } : p);
       await update({ name: data.user.name });
       setEditing(false);
-      toast("Profile updated!", "success");
+      toast(t("profileUpdated"), "success");
     } else {
-      toast("Failed to update profile", "error");
+      toast(t("failedToUpdateProfile"), "error");
     }
     setSaving(false);
   }
@@ -97,17 +99,16 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-white">My Profile</h1>
+        <h1 className="text-2xl font-bold text-white">{t("myProfileTitle")}</h1>
         <Link
           href={`/${profile.username}`}
           className="flex items-center gap-2 text-sm text-zinc-400 hover:text-white transition-colors"
         >
           <ExternalLink className="h-3.5 w-3.5" />
-          View public profile
+          {t("viewPublicProfile")}
         </Link>
       </div>
 
-      {/* Profile card */}
       <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 mb-8">
         <div className="flex items-start gap-5">
           <div className="relative">
@@ -120,25 +121,25 @@ export default function ProfilePage() {
             {editing ? (
               <form onSubmit={handleSave} className="space-y-3">
                 <Input
-                  label="Display name"
+                  label={t("displayName")}
                   value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                  placeholder="Your name"
+                  placeholder={t("displayName")}
                 />
                 <Textarea
-                  label="Bio"
+                  label={t("bio")}
                   value={form.bio}
                   onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
-                  placeholder="Tell people about yourself..."
+                  placeholder={t("bio")}
                   rows={3}
                 />
                 <div className="flex gap-3">
                   <Button type="button" variant="ghost" onClick={() => setEditing(false)}>
-                    Cancel
+                    {t("cancel")}
                   </Button>
                   <Button type="submit" loading={saving} size="sm">
                     <Save className="h-4 w-4 mr-2" />
-                    Save changes
+                    {t("saveChanges")}
                   </Button>
                 </div>
               </form>
@@ -151,15 +152,15 @@ export default function ProfilePage() {
                 <div className="flex items-center gap-5 mt-3">
                   <div>
                     <span className="font-semibold text-white">{profile._count.lists}</span>
-                    <span className="text-zinc-500 text-sm ml-1">lists</span>
+                    <span className="text-zinc-500 text-sm ml-1">{t("listsLabel")}</span>
                   </div>
                   <div>
                     <span className="font-semibold text-white">{profile._count.likes}</span>
-                    <span className="text-zinc-500 text-sm ml-1">likes</span>
+                    <span className="text-zinc-500 text-sm ml-1">{t("likesLabel")}</span>
                   </div>
                 </div>
                 <Button variant="outline" size="sm" className="mt-4" onClick={() => setEditing(true)}>
-                  Edit profile
+                  {t("editProfile")}
                 </Button>
               </>
             )}
@@ -167,11 +168,10 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Lists */}
       <div>
-        <h2 className="text-lg font-semibold text-white mb-4">My Lists</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">{t("myListsSection")}</h2>
         {profile.lists.length === 0 ? (
-          <p className="text-zinc-400 text-sm">No lists yet</p>
+          <p className="text-zinc-400 text-sm">{t("noListsYet")}</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {profile.lists.map((list) => (

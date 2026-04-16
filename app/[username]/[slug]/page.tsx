@@ -88,7 +88,7 @@ export default async function SharedListPage({ params }: PageProps) {
                 <span className="text-zinc-700">·</span>
                 <span className="flex items-center gap-1 text-xs text-zinc-600">
                   {list.isPublic ? <Globe className="h-3 w-3" /> : <Lock className="h-3 w-3" />}
-                  {list.isPublic ? "Public" : "Private"}
+                  {list.isPublic ? "Публичный" : "Приватный"}
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-white">{list.name}</h1>
@@ -96,7 +96,7 @@ export default async function SharedListPage({ params }: PageProps) {
                 <p className="text-zinc-400 mt-1">{list.description}</p>
               )}
               <p className="text-sm text-zinc-500 mt-2">
-                {list._count.movies} {list._count.movies === 1 ? "film" : "films"}
+                {list._count.movies} фильмов
               </p>
             </div>
           </div>
@@ -109,7 +109,7 @@ export default async function SharedListPage({ params }: PageProps) {
                 href={`/lists/${list.id}`}
                 className="text-sm text-zinc-500 hover:text-white transition-colors"
               >
-                Edit list
+                Редактировать список
               </Link>
             )}
           </div>
@@ -121,7 +121,7 @@ export default async function SharedListPage({ params }: PageProps) {
         {list.movies.length === 0 ? (
           <div className="text-center py-16">
             <Film className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
-            <p className="text-zinc-400">This list is empty</p>
+            <p className="text-zinc-400">Список пуст</p>
           </div>
         ) : (
           <div className="space-y-2">

@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/toast";
 import { formatYear, formatRating, formatRuntime } from "@/lib/utils";
+import { useI18n } from "@/lib/i18n-context";
 
 interface SearchResult {
   tmdbId: number;
@@ -38,6 +39,7 @@ function AddMovieContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
+  const { t } = useI18n();
 
   const [mode, setMode] = useState<"search" | "url">("search");
   const [query, setQuery] = useState("");
@@ -96,10 +98,10 @@ function AddMovieContent() {
       if (data.results?.length > 0) {
         handleSelect(data.results[0]);
       } else {
-        toast("Could not find movie from that URL", "error");
+        toast(t("couldNotFindMovie"), "error");
       }
     } else {
-      toast("Failed to fetch movie", "error");
+      toast(t("failedToFetch"), "error");
     }
     setSearching(false);
   }
@@ -128,11 +130,11 @@ function AddMovieContent() {
     });
 
     if (res.ok) {
-      toast("Movie added to list!", "success");
+      toast(t("movieAdded"), "success");
       router.push(`/lists/${selectedListId}`);
     } else {
       const data = await res.json();
-      toast(data.error || "Failed to add movie", "error");
+      toast(data.error || t("failedToAdd"), "error");
       setAdding(false);
     }
   }
@@ -142,8 +144,8 @@ function AddMovieContent() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">Add a Movie</h1>
-        <p className="text-zinc-400 text-sm mt-1">Search or paste a link to add a movie to your list</p>
+        <h1 className="text-2xl font-bold text-white">{t("addAMovieTitle")}</h1>
+        <p className="text-zinc-400 text-sm mt-1">{t("addMovieDesc")}</p>
       </div>
 
       {/* Mode toggle */}
@@ -153,14 +155,14 @@ function AddMovieContent() {
           className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${mode === "search" ? "bg-white/10 text-white" : "text-zinc-500 hover:text-white"}`}
         >
           <Search className="h-4 w-4" />
-          Search
+          {t("searchTab")}
         </button>
         <button
           onClick={() => { setMode("url"); setSelected(null); setResults([]); }}
           className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${mode === "url" ? "bg-white/10 text-white" : "text-zinc-500 hover:text-white"}`}
         >
           <LinkIcon className="h-4 w-4" />
-          Paste Link
+          {t("pasteLink")}
         </button>
       </div>
 
@@ -170,7 +172,7 @@ function AddMovieContent() {
           {mode === "search" ? (
             <div className="relative">
               <Input
-                placeholder="Search for a movie..."
+                placeholder={t("searchForMovie")}
                 value={query}
                 onChange={(e) => handleSearchInput(e.target.value)}
                 className="pr-10"
@@ -183,7 +185,6 @@ function AddMovieContent() {
                   </svg>
                 </div>
               )}
-              {/* Results dropdown */}
               {results.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-2 rounded-xl border border-white/10 bg-zinc-900 shadow-2xl z-50 overflow-hidden">
                   {results.map((movie) => (
@@ -217,13 +218,13 @@ function AddMovieContent() {
           ) : (
             <div className="flex gap-2">
               <Input
-                placeholder="Paste IMDB or TMDB link..."
+                placeholder={t("pasteImdbLink")}
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 className="flex-1"
               />
               <Button onClick={handleUrlSearch} loading={searching}>
-                Fetch
+                {t("fetch")}
               </Button>
             </div>
           )}
@@ -233,7 +234,6 @@ function AddMovieContent() {
       {/* Selected movie preview */}
       {selected && (
         <div className="mb-6 rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
-          {/* Backdrop */}
           {selected.backdropUrl && !editing && (
             <div className="relative h-32 overflow-hidden">
               <Image src={selected.backdropUrl} alt="" fill className="object-cover opacity-40" />
@@ -284,7 +284,7 @@ function AddMovieContent() {
                 value={editData.overview || ""}
                 onChange={(e) => setEditData((d) => ({ ...d, overview: e.target.value }))}
                 rows={4}
-                placeholder="Movie description..."
+                placeholder="..."
               />
             ) : (
               selected.overview && (
@@ -297,7 +297,7 @@ function AddMovieContent() {
                 onClick={() => setSelected(null)}
                 className="text-xs text-zinc-500 hover:text-white transition-colors"
               >
-                Change movie
+                {t("changeMovie")}
               </button>
               <span className="text-zinc-700">·</span>
               <button
@@ -305,7 +305,7 @@ function AddMovieContent() {
                 className="flex items-center gap-1 text-xs text-zinc-500 hover:text-white transition-colors"
               >
                 <Edit2 className="h-3 w-3" />
-                {editing ? "Done editing" : "Edit details"}
+                {editing ? t("doneEditing") : t("editDetails")}
               </button>
             </div>
           </div>
@@ -315,9 +315,8 @@ function AddMovieContent() {
       {/* Add to list form */}
       {selected && (
         <div className="space-y-4">
-          {/* Select list */}
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-1.5">Add to list</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-1.5">{t("addToListLabel")}</label>
             <div className="relative">
               <select
                 value={selectedListId}
@@ -334,10 +333,9 @@ function AddMovieContent() {
             </div>
           </div>
 
-          {/* Optional note */}
           <Textarea
-            label="Your note (optional)"
-            placeholder="Why do you recommend this movie?"
+            label={t("yourNote")}
+            placeholder={t("whyRecommend")}
             value={note}
             onChange={(e) => setNote(e.target.value)}
             rows={2}
@@ -345,22 +343,21 @@ function AddMovieContent() {
 
           <div className="flex gap-3 pt-2">
             <Button variant="outline" onClick={() => setSelected(null)} className="flex-1">
-              Cancel
+              {t("cancel")}
             </Button>
             <Button onClick={handleAdd} loading={adding} disabled={!selectedListId} className="flex-1">
               <Check className="h-4 w-4 mr-2" />
-              Add to List
+              {t("addToListBtn")}
             </Button>
           </div>
         </div>
       )}
 
-      {/* Empty state */}
       {!selected && results.length === 0 && !searching && (
         <div className="text-center py-12 text-zinc-600">
           <Search className="h-10 w-10 mx-auto mb-3 opacity-40" />
-          <p className="text-sm">Search for a movie or paste a link</p>
-          <p className="text-xs mt-1 text-zinc-700">Supports IMDB and TMDB links</p>
+          <p className="text-sm">{t("searchOrPaste")}</p>
+          <p className="text-xs mt-1 text-zinc-700">{t("supportsLinks")}</p>
         </div>
       )}
     </div>

@@ -64,11 +64,11 @@ export default async function UserProfilePage({ params }: PageProps) {
           <div className="flex items-center gap-5 mt-3">
             <div className="text-center">
               <p className="text-white font-semibold">{user._count.lists}</p>
-              <p className="text-zinc-500 text-xs">Lists</p>
+              <p className="text-zinc-500 text-xs">Списков</p>
             </div>
             <div className="text-center">
               <p className="text-white font-semibold">{user._count.likes}</p>
-              <p className="text-zinc-500 text-xs">Likes</p>
+              <p className="text-zinc-500 text-xs">Лайков</p>
             </div>
           </div>
 
@@ -77,7 +77,7 @@ export default async function UserProfilePage({ params }: PageProps) {
               href="/profile"
               className="inline-block mt-4 text-sm text-zinc-400 hover:text-white border border-white/10 hover:border-white/20 px-4 py-1.5 rounded-lg transition-colors"
             >
-              Edit profile
+              Редактировать профиль
             </Link>
           )}
         </div>
@@ -88,14 +88,14 @@ export default async function UserProfilePage({ params }: PageProps) {
         <div className="flex items-center gap-2 mb-5">
           <List className="h-5 w-5 text-zinc-500" />
           <h2 className="text-lg font-semibold text-white">
-            {isOwner ? "My Lists" : `${user.name?.split(" ")[0] || username}'s Lists`}
+            {isOwner ? "Мои списки" : `Списки ${user.name?.split(" ")[0] || username}`}
           </h2>
         </div>
 
         {user.lists.length === 0 ? (
           <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-16 text-center">
             <Film className="h-10 w-10 text-zinc-700 mx-auto mb-3" />
-            <p className="text-zinc-400">No public lists yet</p>
+            <p className="text-zinc-400">Публичных списков ещё нет</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

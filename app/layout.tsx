@@ -5,6 +5,7 @@ import { SessionProvider } from "next-auth/react";
 import { ToastProvider } from "@/components/ui/toast";
 import { Navbar, MobileNav } from "@/components/layout/navbar";
 import { PWARegister } from "@/components/pwa-register";
+import { I18nProvider } from "@/lib/i18n-context";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -38,9 +39,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} dark`}>
       <head>
-        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+        <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
       </head>
       <body className="min-h-screen bg-black text-white antialiased">
+        <I18nProvider>
         <SessionProvider>
           <ToastProvider>
             <Navbar />
@@ -51,6 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <PWARegister />
           </ToastProvider>
         </SessionProvider>
+        </I18nProvider>
       </body>
     </html>
   );
