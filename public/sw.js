@@ -1,4 +1,4 @@
-const CACHE_NAME = "myfilms-v1";
+const CACHE_NAME = "myfilms-v3";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
