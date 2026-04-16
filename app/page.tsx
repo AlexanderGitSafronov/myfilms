@@ -55,7 +55,7 @@ export default async function HomePage() {
         <FadeUp delay={0.05}>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
             {[
-              { href: "/add-movie", icon: Film,  label: "Добавить фильм", color: "from-red-600/80 to-red-900/80", border: "border-red-600/20" },
+              { href: "/add-movie", icon: Film,  label: "Добавить", color: "from-red-600/80 to-red-900/80", border: "border-red-600/20" },
               { href: "/feed",      icon: Rss,   label: "Лента",          color: "from-zinc-800 to-zinc-900", border: "border-white/5" },
               { href: "/lists",     icon: List,  label: "Мои списки",     color: "from-zinc-800 to-zinc-900", border: "border-white/5" },
               { href: "/profile",   icon: Users, label: "Профиль",        color: "from-zinc-800 to-zinc-900", border: "border-white/5" },
