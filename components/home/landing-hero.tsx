@@ -1,32 +1,43 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useAnimationFrame } from "framer-motion";
+import { motion } from "framer-motion";
 import { Film, ArrowRight, Star, List, Share2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
+// Fixed particle definitions — no Math.random() at render time (avoids hydration mismatch)
+const PARTICLES = [
+  { id:0,  x:5,  size:2, delay:0,   dur:14, op:0.3 },
+  { id:1,  x:12, size:1, delay:2,   dur:18, op:0.2 },
+  { id:2,  x:20, size:3, delay:4,   dur:13, op:0.35 },
+  { id:3,  x:28, size:2, delay:1,   dur:16, op:0.25 },
+  { id:4,  x:35, size:1, delay:6,   dur:20, op:0.15 },
+  { id:5,  x:42, size:2, delay:3,   dur:15, op:0.3 },
+  { id:6,  x:50, size:3, delay:7,   dur:12, op:0.4 },
+  { id:7,  x:58, size:1, delay:0.5, dur:17, op:0.2 },
+  { id:8,  x:65, size:2, delay:5,   dur:14, op:0.3 },
+  { id:9,  x:72, size:1, delay:2.5, dur:19, op:0.2 },
+  { id:10, x:80, size:3, delay:4.5, dur:13, op:0.35 },
+  { id:11, x:88, size:2, delay:8,   dur:16, op:0.25 },
+  { id:12, x:95, size:1, delay:1.5, dur:21, op:0.15 },
+  { id:13, x:15, size:2, delay:9,   dur:15, op:0.3 },
+  { id:14, x:45, size:1, delay:3.5, dur:18, op:0.2 },
+  { id:15, x:75, size:2, delay:6.5, dur:14, op:0.3 },
+];
+
 // ── Floating particles ──────────────────────────────────────────────────────
 function Particles() {
-  const particles = Array.from({ length: 28 }, (_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    size: Math.random() * 3 + 1,
-    delay: Math.random() * 8,
-    duration: Math.random() * 10 + 12,
-    opacity: Math.random() * 0.4 + 0.1,
-  }));
-
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((p) => (
+      {PARTICLES.map((p) => (
         <motion.div
           key={p.id}
           className="absolute rounded-full bg-red-400"
           style={{ left: `${p.x}%`, bottom: "-10px", width: p.size, height: p.size }}
-          animate={{ y: [0, -window.innerHeight - 40], opacity: [0, p.opacity, p.opacity, 0] }}
-          transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: "linear" }}
+          animate={{ y: [0, -1200], opacity: [0, p.op, p.op, 0] }}
+          transition={{ duration: p.dur, delay: p.delay, repeat: Infinity, ease: "linear" }}
         />
       ))}
     </div>
