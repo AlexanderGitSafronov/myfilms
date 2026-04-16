@@ -41,24 +41,26 @@ export function Navbar() {
             <span className="font-bold text-white text-lg hidden sm:block">MyFilms</span>
           </Link>
 
-          {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
-            {navLinks.map(({ href, icon: Icon, label }) => (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                  pathname === href
-                    ? "bg-white/10 text-white"
-                    : "text-zinc-400 hover:text-white hover:bg-white/5"
-                )}
-              >
-                <Icon className="h-4 w-4" />
-                {label}
-              </Link>
-            ))}
-          </nav>
+          {/* Desktop nav — only for logged in users */}
+          {session && (
+            <nav className="hidden md:flex items-center gap-1">
+              {navLinks.map(({ href, icon: Icon, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className={cn(
+                    "flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+                    pathname === href
+                      ? "bg-white/10 text-white"
+                      : "text-zinc-400 hover:text-white hover:bg-white/5"
+                  )}
+                >
+                  <Icon className="h-4 w-4" />
+                  {label}
+                </Link>
+              ))}
+            </nav>
+          )}
 
           {/* Right side */}
           <div className="flex items-center gap-2">
@@ -157,12 +159,17 @@ export function MobileNav() {
   const { data: session } = useSession();
   const { t } = useI18n();
 
-  const links = [
-    { href: "/", icon: Home, label: t("home") },
-    { href: "/lists", icon: List, label: t("myLists") },
-    { href: "/add-movie", icon: Plus, label: t("addMovie") },
-    { href: session ? "/profile" : "/login", icon: User, label: t("profile") },
-  ];
+  const links = session
+    ? [
+        { href: "/", icon: Home, label: t("home") },
+        { href: "/lists", icon: List, label: t("myLists") },
+        { href: "/add-movie", icon: Plus, label: t("addMovie") },
+        { href: "/profile", icon: User, label: t("profile") },
+      ]
+    : [
+        { href: "/", icon: Home, label: t("home") },
+        { href: "/login", icon: User, label: t("signIn") },
+      ];
 
   return (
     <nav className="fixed bottom-0 inset-x-0 z-40 md:hidden bg-black/90 backdrop-blur-xl border-t border-white/5">
