@@ -59,11 +59,21 @@ export function NavigationProgress() {
     if (current === prevPath.current) return;
     prevPath.current = current;
 
-    setVisible(true);
+    // Only show loader if navigation takes longer than 300ms (fast cached navigations won't show it)
     if (timerRef.current) clearTimeout(timerRef.current);
-    timerRef.current = setTimeout(() => setVisible(false), 700);
+    const showTimer = setTimeout(() => setVisible(true), 300);
 
-    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+    const hideTimer = setTimeout(() => {
+      clearTimeout(showTimer);
+      setVisible(false);
+    }, 900);
+
+    timerRef.current = hideTimer;
+
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
   }, [pathname, searchParams]);
 
   return (
@@ -94,7 +104,7 @@ export function SplashLoader() {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const t = setTimeout(() => setVisible(false), 1000);
+    const t = setTimeout(() => setVisible(false), 600);
     return () => clearTimeout(t);
   }, []);
 

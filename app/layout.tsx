@@ -45,6 +45,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
         <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
+        {/* Prefetch key routes for instant navigation */}
+        <link rel="prefetch" href="/feed" />
+        <link rel="prefetch" href="/lists" />
+        <link rel="prefetch" href="/explore" />
+        <link rel="prefetch" href="/profile" />
       </head>
       <body className="min-h-screen bg-black text-white antialiased">
         <I18nProvider>
