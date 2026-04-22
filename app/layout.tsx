@@ -7,6 +7,8 @@ import { Navbar, MobileNav } from "@/components/layout/navbar";
 import { PWARegister } from "@/components/pwa-register";
 import { I18nProvider } from "@/lib/i18n-context";
 import { SplashLoader } from "@/components/ui/page-loader";
+import { CookieBanner } from "@/components/cookie-banner";
+import { LegalFooter } from "@/components/layout/legal-footer";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -59,8 +61,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <main className="flex-1 pb-20 md:pb-0">
               {children}
             </main>
+            <LegalFooter />
             <MobileNav />
             <PWARegister />
+            <CookieBanner />
           </ToastProvider>
         </SessionProvider>
         </I18nProvider>
