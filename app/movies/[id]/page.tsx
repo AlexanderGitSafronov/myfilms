@@ -7,23 +7,38 @@ export default async function MoviePage({ params }: { params: Promise<{ id: stri
   const { id } = await params;
   const session = await auth();
 
-  const movie = await prisma.movie.findUnique({
-    where: { id },
-    include: {
-      comments: {
-        where: { parentId: null },
-        include: {
-          user: { select: { id: true, name: true, image: true, username: true } },
-          replies: {
-            include: { user: { select: { id: true, name: true, image: true, username: true } } },
-            orderBy: { createdAt: "asc" },
+  let movie;
+  try {
+    movie = await prisma.movie.findUnique({
+      where: { id },
+      include: {
+        comments: {
+          where: { parentId: null },
+          include: {
+            user: { select: { id: true, name: true, image: true, username: true } },
+            replies: {
+              include: { user: { select: { id: true, name: true, image: true, username: true } } },
+              orderBy: { createdAt: "asc" },
+            },
           },
+          orderBy: { createdAt: "desc" },
         },
-        orderBy: { createdAt: "desc" },
+        _count: { select: { likes: true } },
       },
-      _count: { select: { likes: true } },
-    },
-  });
+    });
+  } catch {
+    // Fallback if parentId column not yet migrated to DB
+    movie = await prisma.movie.findUnique({
+      where: { id },
+      include: {
+        comments: {
+          include: { user: { select: { id: true, name: true, image: true, username: true } } },
+          orderBy: { createdAt: "desc" },
+        },
+        _count: { select: { likes: true } },
+      },
+    });
+  }
 
   if (!movie) notFound();
 

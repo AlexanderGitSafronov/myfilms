@@ -35,17 +35,32 @@ export async function POST(
     }
   }
 
-  const comment = await prisma.comment.create({
-    data: {
-      content: parsed.data.content,
-      userId: session.user.id,
-      movieId,
-      parentId: parsed.data.parentId ?? null,
-    },
-    include: {
-      user: { select: { id: true, name: true, image: true, username: true } },
-    },
-  });
+  let comment;
+  try {
+    comment = await prisma.comment.create({
+      data: {
+        content: parsed.data.content,
+        userId: session.user.id,
+        movieId,
+        parentId: parsed.data.parentId ?? null,
+      },
+      include: {
+        user: { select: { id: true, name: true, image: true, username: true } },
+      },
+    });
+  } catch {
+    // Fallback: parentId column not yet migrated — create as root comment
+    comment = await prisma.comment.create({
+      data: {
+        content: parsed.data.content,
+        userId: session.user.id,
+        movieId,
+      },
+      include: {
+        user: { select: { id: true, name: true, image: true, username: true } },
+      },
+    });
+  }
 
   return NextResponse.json({ comment }, { status: 201 });
 }

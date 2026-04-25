@@ -40,23 +40,37 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  const movie = await prisma.movie.findUnique({
-    where: { id },
-    include: {
-      comments: {
-        where: { parentId: null },
-        include: {
-          user: { select: { id: true, name: true, image: true, username: true } },
-          replies: {
-            include: { user: { select: { id: true, name: true, image: true, username: true } } },
-            orderBy: { createdAt: "asc" },
+  let movie;
+  try {
+    movie = await prisma.movie.findUnique({
+      where: { id },
+      include: {
+        comments: {
+          where: { parentId: null },
+          include: {
+            user: { select: { id: true, name: true, image: true, username: true } },
+            replies: {
+              include: { user: { select: { id: true, name: true, image: true, username: true } } },
+              orderBy: { createdAt: "asc" },
+            },
           },
+          orderBy: { createdAt: "desc" },
         },
-        orderBy: { createdAt: "desc" },
+        _count: { select: { likes: true } },
       },
-      _count: { select: { likes: true } },
-    },
-  });
+    });
+  } catch {
+    movie = await prisma.movie.findUnique({
+      where: { id },
+      include: {
+        comments: {
+          include: { user: { select: { id: true, name: true, image: true, username: true } } },
+          orderBy: { createdAt: "desc" },
+        },
+        _count: { select: { likes: true } },
+      },
+    });
+  }
 
   if (!movie) {
     return NextResponse.json({ error: "Movie not found" }, { status: 404 });
