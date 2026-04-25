@@ -27,17 +27,24 @@ export default async function MoviePage({ params }: { params: Promise<{ id: stri
       },
     });
   } catch {
-    // Fallback if parentId column not yet migrated to DB
-    movie = await prisma.movie.findUnique({
+    // Fallback when Comment.parentId column hasn't been migrated to DB.
+    // Use explicit select to avoid touching the missing column.
+    const fallback = await prisma.movie.findUnique({
       where: { id },
       include: {
         comments: {
-          include: { user: { select: { id: true, name: true, image: true, username: true } } },
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            user: { select: { id: true, name: true, image: true, username: true } },
+          },
           orderBy: { createdAt: "desc" },
         },
         _count: { select: { likes: true } },
       },
     });
+    movie = fallback;
   }
 
   if (!movie) notFound();

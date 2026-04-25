@@ -64,7 +64,12 @@ export async function GET(
       where: { id },
       include: {
         comments: {
-          include: { user: { select: { id: true, name: true, image: true, username: true } } },
+          select: {
+            id: true,
+            content: true,
+            createdAt: true,
+            user: { select: { id: true, name: true, image: true, username: true } },
+          },
           orderBy: { createdAt: "desc" },
         },
         _count: { select: { likes: true } },

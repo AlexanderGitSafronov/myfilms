@@ -44,19 +44,26 @@ export async function POST(
         movieId,
         parentId: parsed.data.parentId ?? null,
       },
-      include: {
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        parentId: true,
         user: { select: { id: true, name: true, image: true, username: true } },
       },
     });
   } catch {
-    // Fallback: parentId column not yet migrated — create as root comment
+    // Fallback when parentId column not migrated — create as root comment.
     comment = await prisma.comment.create({
       data: {
         content: parsed.data.content,
         userId: session.user.id,
         movieId,
       },
-      include: {
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
         user: { select: { id: true, name: true, image: true, username: true } },
       },
     });

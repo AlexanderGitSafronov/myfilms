@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="prefetch" href="/explore" />
         <link rel="prefetch" href="/profile" />
       </head>
-      <body className="min-h-screen bg-black text-white antialiased">
+      <body className="min-h-screen flex flex-col bg-black text-white antialiased">
         <I18nProvider>
         <SessionProvider>
           <ToastProvider>
