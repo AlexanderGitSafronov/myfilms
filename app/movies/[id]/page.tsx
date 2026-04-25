@@ -11,7 +11,14 @@ export default async function MoviePage({ params }: { params: Promise<{ id: stri
     where: { id },
     include: {
       comments: {
-        include: { user: { select: { id: true, name: true, image: true, username: true } } },
+        where: { parentId: null },
+        include: {
+          user: { select: { id: true, name: true, image: true, username: true } },
+          replies: {
+            include: { user: { select: { id: true, name: true, image: true, username: true } } },
+            orderBy: { createdAt: "asc" },
+          },
+        },
         orderBy: { createdAt: "desc" },
       },
       _count: { select: { likes: true } },

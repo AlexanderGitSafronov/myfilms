@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { Star, Heart, ExternalLink, Clock, Calendar, Send, ArrowLeft, Play } from "lucide-react";
+import { Star, Heart, ExternalLink, Clock, Calendar, Send, ArrowLeft, Play, Reply } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
@@ -19,6 +19,7 @@ interface Comment {
   content: string;
   createdAt: string;
   user: { id: string; name: string | null; username: string; image: string | null };
+  replies?: Comment[];
 }
 
 interface Movie {
@@ -54,6 +55,9 @@ export function MovieClient({
   const [liked, setLiked] = useState(initialUserLiked);
   const [comment, setComment] = useState("");
   const [posting, setPosting] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
+  const [postingReply, setPostingReply] = useState(false);
   const [trailer, setTrailer] = useState<string | null>(null);
   const [similar, setSimilar] = useState<Array<{ id: number; title: string; posterUrl: string | null; rating: number }>>([]);
 
@@ -89,11 +93,37 @@ export function MovieClient({
     });
     if (res.ok) {
       const data = await res.json();
-      setMovie((m) => ({ ...m, comments: [data.comment, ...m.comments] }));
+      setMovie((m) => ({ ...m, comments: [{ ...data.comment, replies: [] }, ...m.comments] }));
       setComment("");
       toast(t("commentAdded"), "success");
     }
     setPosting(false);
+  }
+
+  async function handleReply(e: React.FormEvent, parentId: string) {
+    e.preventDefault();
+    if (!session || !replyText.trim()) return;
+    setPostingReply(true);
+    const res = await fetch(`/api/movies/${movie.id}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: replyText, parentId }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      setMovie((m) => ({
+        ...m,
+        comments: m.comments.map((c) =>
+          c.id === parentId
+            ? { ...c, replies: [...(c.replies || []), data.comment] }
+            : c
+        ),
+      }));
+      setReplyText("");
+      setReplyingTo(null);
+      toast(t("commentAdded"), "success");
+    }
+    setPostingReply(false);
   }
 
   return (
@@ -248,20 +278,75 @@ export function MovieClient({
         {movie.comments.length === 0 ? (
           <p className="text-zinc-500 text-sm py-8 text-center">{t("noComments")}</p>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-5">
             {movie.comments.map((c) => (
-              <div key={c.id} className="flex gap-3">
-                <Link href={`/${c.user.username}`}>
-                  <Avatar src={c.user.image} name={c.user.name} size="sm" className="flex-shrink-0" />
-                </Link>
-                <div className="flex-1 bg-white/[0.02] rounded-xl border border-white/5 px-4 py-3">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Link href={`/${c.user.username}`} className="text-sm font-medium text-white hover:text-red-400 transition-colors">
-                      {c.user.name}
-                    </Link>
-                    <span className="text-xs text-zinc-600">{formatDate(c.createdAt)}</span>
+              <div key={c.id}>
+                <div className="flex gap-3">
+                  <Link href={`/${c.user.username}`}>
+                    <Avatar src={c.user.image} name={c.user.name} size="sm" className="flex-shrink-0" />
+                  </Link>
+                  <div className="flex-1 min-w-0">
+                    <div className="bg-white/[0.02] rounded-xl border border-white/5 px-4 py-3">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <Link href={`/${c.user.username}`} className="text-sm font-medium text-white hover:text-red-400 transition-colors">
+                          {c.user.name}
+                        </Link>
+                        <span className="text-xs text-zinc-600">{formatDate(c.createdAt)}</span>
+                      </div>
+                      <p className="text-sm text-zinc-300 whitespace-pre-wrap break-words">{c.content}</p>
+                    </div>
+
+                    {session && (
+                      <button
+                        onClick={() => {
+                          setReplyingTo(replyingTo === c.id ? null : c.id);
+                          setReplyText("");
+                        }}
+                        className="mt-1.5 ml-1 inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-red-400 transition-colors"
+                      >
+                        <Reply className="h-3 w-3" />
+                        {replyingTo === c.id ? "Отмена" : "Ответить"}
+                      </button>
+                    )}
+
+                    {replyingTo === c.id && session && (
+                      <form onSubmit={(e) => handleReply(e, c.id)} className="mt-2 flex gap-2">
+                        <Avatar src={session.user.image} name={session.user.name} size="sm" className="flex-shrink-0 mt-0.5" />
+                        <Textarea
+                          placeholder={`Ответить ${c.user.name || c.user.username}...`}
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          rows={1}
+                          className="flex-1"
+                          autoFocus
+                        />
+                        <Button type="submit" size="icon" loading={postingReply} disabled={!replyText.trim()} className="self-end h-10 w-10 flex-shrink-0">
+                          <Send className="h-4 w-4" />
+                        </Button>
+                      </form>
+                    )}
+
+                    {c.replies && c.replies.length > 0 && (
+                      <div className="mt-3 space-y-3 pl-4 border-l-2 border-white/5">
+                        {c.replies.map((r) => (
+                          <div key={r.id} className="flex gap-2.5">
+                            <Link href={`/${r.user.username}`}>
+                              <Avatar src={r.user.image} name={r.user.name} size="sm" className="flex-shrink-0" />
+                            </Link>
+                            <div className="flex-1 bg-white/[0.02] rounded-xl border border-white/5 px-3 py-2.5 min-w-0">
+                              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                                <Link href={`/${r.user.username}`} className="text-sm font-medium text-white hover:text-red-400 transition-colors">
+                                  {r.user.name}
+                                </Link>
+                                <span className="text-xs text-zinc-600">{formatDate(r.createdAt)}</span>
+                              </div>
+                              <p className="text-sm text-zinc-300 whitespace-pre-wrap break-words">{r.content}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <p className="text-sm text-zinc-300">{c.content}</p>
                 </div>
               </div>
             ))}

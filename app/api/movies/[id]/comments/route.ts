@@ -5,6 +5,7 @@ import { z } from "zod";
 
 const commentSchema = z.object({
   content: z.string().min(1).max(500),
+  parentId: z.string().optional().nullable(),
 });
 
 export async function POST(
@@ -24,11 +25,22 @@ export async function POST(
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
 
+  if (parsed.data.parentId) {
+    const parent = await prisma.comment.findFirst({
+      where: { id: parsed.data.parentId, movieId },
+      select: { id: true },
+    });
+    if (!parent) {
+      return NextResponse.json({ error: "Parent comment not found" }, { status: 400 });
+    }
+  }
+
   const comment = await prisma.comment.create({
     data: {
       content: parsed.data.content,
       userId: session.user.id,
       movieId,
+      parentId: parsed.data.parentId ?? null,
     },
     include: {
       user: { select: { id: true, name: true, image: true, username: true } },
