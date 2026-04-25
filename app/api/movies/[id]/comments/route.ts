@@ -25,14 +25,16 @@ export async function POST(
     return NextResponse.json({ error: "Invalid input" }, { status: 400 });
   }
 
+  let parentAuthorId: string | null = null;
   if (parsed.data.parentId) {
     const parent = await prisma.comment.findFirst({
       where: { id: parsed.data.parentId, movieId },
-      select: { id: true },
+      select: { id: true, userId: true },
     });
     if (!parent) {
       return NextResponse.json({ error: "Parent comment not found" }, { status: 400 });
     }
+    parentAuthorId = parent.userId;
   }
 
   let comment;
@@ -67,6 +69,42 @@ export async function POST(
         user: { select: { id: true, name: true, image: true, username: true } },
       },
     });
+  }
+
+  // Notifications — best-effort, must never break the comment response.
+  try {
+    if (parentAuthorId && parentAuthorId !== session.user.id) {
+      // Reply: notify only the parent comment author.
+      await prisma.notification.create({
+        data: {
+          userId: parentAuthorId,
+          fromUserId: session.user.id,
+          type: "COMMENT",
+          movieId,
+        },
+      });
+    } else if (!parsed.data.parentId) {
+      // Root comment: notify everyone who has this movie in their lists,
+      // excluding the commenter and deduplicated.
+      const owners = await prisma.listMovie.findMany({
+        where: { movieId, list: { userId: { not: session.user.id } } },
+        select: { list: { select: { userId: true } } },
+      });
+      const recipients = Array.from(new Set(owners.map((o) => o.list.userId)));
+
+      if (recipients.length > 0) {
+        await prisma.notification.createMany({
+          data: recipients.map((userId) => ({
+            userId,
+            fromUserId: session.user.id,
+            type: "COMMENT" as const,
+            movieId,
+          })),
+        });
+      }
+    }
+  } catch (err) {
+    console.error("notification create failed", err);
   }
 
   return NextResponse.json({ comment }, { status: 201 });
