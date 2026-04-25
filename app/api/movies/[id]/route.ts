@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { ensureSchemaUpToDate } from "@/lib/auto-migrate";
 
 export async function DELETE(
   req: Request,
@@ -40,42 +41,25 @@ export async function GET(
 ) {
   const { id } = await params;
 
-  let movie;
-  try {
-    movie = await prisma.movie.findUnique({
-      where: { id },
-      include: {
-        comments: {
-          where: { parentId: null },
-          include: {
-            user: { select: { id: true, name: true, image: true, username: true } },
-            replies: {
-              include: { user: { select: { id: true, name: true, image: true, username: true } } },
-              orderBy: { createdAt: "asc" },
-            },
+  await ensureSchemaUpToDate();
+
+  const movie = await prisma.movie.findUnique({
+    where: { id },
+    include: {
+      comments: {
+        where: { parentId: null },
+        include: {
+          user: { select: { id: true, name: true, image: true, username: true } },
+          replies: {
+            include: { user: { select: { id: true, name: true, image: true, username: true } } },
+            orderBy: { createdAt: "asc" },
           },
-          orderBy: { createdAt: "desc" },
         },
-        _count: { select: { likes: true } },
+        orderBy: { createdAt: "desc" },
       },
-    });
-  } catch {
-    movie = await prisma.movie.findUnique({
-      where: { id },
-      include: {
-        comments: {
-          select: {
-            id: true,
-            content: true,
-            createdAt: true,
-            user: { select: { id: true, name: true, image: true, username: true } },
-          },
-          orderBy: { createdAt: "desc" },
-        },
-        _count: { select: { likes: true } },
-      },
-    });
-  }
+      _count: { select: { likes: true } },
+    },
+  });
 
   if (!movie) {
     return NextResponse.json({ error: "Movie not found" }, { status: 404 });

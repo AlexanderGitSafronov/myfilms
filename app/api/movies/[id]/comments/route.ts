@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { ensureSchemaUpToDate } from "@/lib/auto-migrate";
 import { z } from "zod";
 
 const commentSchema = z.object({
@@ -16,6 +17,8 @@ export async function POST(
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  await ensureSchemaUpToDate();
 
   const { id: movieId } = await params;
   const body = await req.json();
@@ -37,39 +40,21 @@ export async function POST(
     parentAuthorId = parent.userId;
   }
 
-  let comment;
-  try {
-    comment = await prisma.comment.create({
-      data: {
-        content: parsed.data.content,
-        userId: session.user.id,
-        movieId,
-        parentId: parsed.data.parentId ?? null,
-      },
-      select: {
-        id: true,
-        content: true,
-        createdAt: true,
-        parentId: true,
-        user: { select: { id: true, name: true, image: true, username: true } },
-      },
-    });
-  } catch {
-    // Fallback when parentId column not migrated — create as root comment.
-    comment = await prisma.comment.create({
-      data: {
-        content: parsed.data.content,
-        userId: session.user.id,
-        movieId,
-      },
-      select: {
-        id: true,
-        content: true,
-        createdAt: true,
-        user: { select: { id: true, name: true, image: true, username: true } },
-      },
-    });
-  }
+  const comment = await prisma.comment.create({
+    data: {
+      content: parsed.data.content,
+      userId: session.user.id,
+      movieId,
+      parentId: parsed.data.parentId ?? null,
+    },
+    select: {
+      id: true,
+      content: true,
+      createdAt: true,
+      parentId: true,
+      user: { select: { id: true, name: true, image: true, username: true } },
+    },
+  });
 
   // Notifications — best-effort, must never break the comment response.
   try {
