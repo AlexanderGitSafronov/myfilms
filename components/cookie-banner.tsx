@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Cookie, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useI18n } from "@/lib/i18n-context";
 
 const CONSENT_KEY = "myfilms-cookie-consent";
 
 export function CookieBanner() {
   const [visible, setVisible] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     const consent = localStorage.getItem(CONSENT_KEY);
@@ -47,19 +49,18 @@ export function CookieBanner() {
                 <Cookie className="h-4 w-4 text-red-400" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-white text-sm">Мы используем cookies</h3>
+                <h3 className="font-semibold text-white text-sm">{t("cookieTitle")}</h3>
                 <p className="text-xs text-zinc-400 mt-1 leading-relaxed">
-                  Мы используем cookies для работы авторизации и сохранения ваших настроек.
-                  Подробнее — в{" "}
+                  {t("cookieDesc")}{" "}
                   <Link href="/privacy" className="text-red-400 hover:text-red-300 underline">
-                    политике конфиденциальности
+                    {t("cookiePrivacyLink")}
                   </Link>.
                 </p>
               </div>
               <button
                 onClick={decline}
                 className="text-zinc-500 hover:text-white transition-colors flex-shrink-0 -mt-1 -mr-1 p-1"
-                aria-label="Закрыть"
+                aria-label={t("closeAria")}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -69,13 +70,13 @@ export function CookieBanner() {
                 onClick={decline}
                 className="flex-1 px-3 py-2 rounded-lg text-xs font-medium border border-white/10 text-zinc-300 hover:bg-white/5 transition-colors"
               >
-                Только необходимые
+                {t("cookieDecline")}
               </button>
               <button
                 onClick={accept}
                 className="flex-1 px-3 py-2 rounded-lg text-xs font-medium bg-red-600 text-white hover:bg-red-500 transition-colors"
               >
-                Принять все
+                {t("cookieAccept")}
               </button>
             </div>
           </div>

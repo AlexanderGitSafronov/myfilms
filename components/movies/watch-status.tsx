@@ -5,18 +5,21 @@ import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Bookmark, Eye, CheckCircle2, Star, X } from "lucide-react";
 import { useToast } from "@/components/ui/toast";
+import { useI18n } from "@/lib/i18n-context";
+import type { TranslationKey } from "@/lib/translations";
 
 type Status = "WANT" | "WATCHING" | "WATCHED" | null;
 
-const STATUS_OPTIONS: { value: Status; label: string; icon: React.ElementType; color: string; bg: string }[] = [
-  { value: "WANT",     label: "Хочу посмотреть", icon: Bookmark,     color: "text-blue-400",   bg: "bg-blue-500/10 border-blue-500/30" },
-  { value: "WATCHING", label: "Смотрю",           icon: Eye,          color: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/30" },
-  { value: "WATCHED",  label: "Посмотрел",         icon: CheckCircle2, color: "text-green-400",  bg: "bg-green-500/10 border-green-500/30" },
+const STATUS_OPTIONS: { value: Status; labelKey: TranslationKey; icon: React.ElementType; color: string; bg: string }[] = [
+  { value: "WANT",     labelKey: "wantToWatch",    icon: Bookmark,     color: "text-blue-400",   bg: "bg-blue-500/10 border-blue-500/30" },
+  { value: "WATCHING", labelKey: "statusWatching", icon: Eye,          color: "text-yellow-400", bg: "bg-yellow-500/10 border-yellow-500/30" },
+  { value: "WATCHED",  labelKey: "statusWatched",  icon: CheckCircle2, color: "text-green-400",  bg: "bg-green-500/10 border-green-500/30" },
 ];
 
 export function WatchStatus({ movieId }: { movieId: string }) {
   const { data: session } = useSession();
   const { toast } = useToast();
+  const { t } = useI18n();
   const [status, setStatus] = useState<Status>(null);
   const [userRating, setUserRating] = useState<number | null>(null);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
@@ -43,7 +46,8 @@ export function WatchStatus({ movieId }: { movieId: string }) {
       const d = await res.json();
       setStatus(d.status);
       setOpen(false);
-      toast(newStatus === null ? "Статус удалён" : STATUS_OPTIONS.find(o => o.value === newStatus)?.label ?? "", "success");
+      const opt = STATUS_OPTIONS.find(o => o.value === newStatus);
+      toast(newStatus === null ? t("statusRemoved") : opt ? t(opt.labelKey) : "", "success");
     }
     setSaving(false);
   }
@@ -82,7 +86,7 @@ export function WatchStatus({ movieId }: { movieId: string }) {
           ) : (
             <Bookmark className="h-4 w-4 flex-shrink-0" />
           )}
-          {current?.label ?? "Добавить статус"}
+          {current ? t(current.labelKey) : t("addStatus")}
         </button>
 
         <AnimatePresence>
@@ -96,14 +100,14 @@ export function WatchStatus({ movieId }: { movieId: string }) {
                 transition={{ duration: 0.15 }}
                 className="absolute left-0 top-full mt-1 z-20 w-52 rounded-xl bg-zinc-900 border border-white/10 shadow-2xl py-1 overflow-hidden"
               >
-                {STATUS_OPTIONS.map(({ value, label, icon: Icon, color }) => (
+                {STATUS_OPTIONS.map(({ value, labelKey, icon: Icon, color }) => (
                   <button
                     key={value}
                     onClick={() => setWatchStatus(value)}
                     className={`flex w-full items-center gap-2.5 px-3 py-2.5 text-sm transition-colors hover:bg-white/5 ${status === value ? color + " font-medium" : "text-zinc-300"}`}
                   >
                     <Icon className={`h-4 w-4 flex-shrink-0 ${status === value ? color : "text-zinc-500"}`} />
-                    {label}
+                    {t(labelKey)}
                     {status === value && <CheckCircle2 className={`h-3.5 w-3.5 ml-auto ${color}`} />}
                   </button>
                 ))}
@@ -115,7 +119,7 @@ export function WatchStatus({ movieId }: { movieId: string }) {
                       className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:bg-red-500/5 transition-colors"
                     >
                       <X className="h-4 w-4 flex-shrink-0" />
-                      Удалить статус
+                      {t("removeStatus")}
                     </button>
                   </>
                 )}
@@ -132,7 +136,7 @@ export function WatchStatus({ movieId }: { movieId: string }) {
           animate={{ opacity: 1, y: 0 }}
           className="flex items-center gap-1"
         >
-          <span className="text-xs text-zinc-500 mr-1">Моя оценка:</span>
+          <span className="text-xs text-zinc-500 mr-1">{t("myRating")}</span>
           {[...Array(10)].map((_, i) => {
             const val = i + 1;
             const filled = (hoverRating ?? userRating ?? 0) >= val;

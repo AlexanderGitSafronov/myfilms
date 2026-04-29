@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Film } from "lucide-react";
+import { useI18n } from "@/lib/i18n-context";
 
 // ── Centered loader (fits between header + footer) ───────────────────────────
 function LoaderContent() {
@@ -102,6 +103,7 @@ export function NavigationProgress() {
 // ── PWA splash screen ─────────────────────────────────────────────────────────
 export function SplashLoader() {
   const [visible, setVisible] = useState(true);
+  const { t } = useI18n();
 
   useEffect(() => {
     const t = setTimeout(() => setVisible(false), 600);
@@ -153,7 +155,7 @@ export function SplashLoader() {
               transition={{ delay: 0.25, duration: 0.4 }}
             >
               <p className="text-2xl font-bold text-white tracking-tight">MyFilms</p>
-              <p className="text-sm text-zinc-500 mt-1">Коллекция фильмов</p>
+              <p className="text-sm text-zinc-500 mt-1">{t("splashTagline")}</p>
             </motion.div>
 
             {/* Dots */}

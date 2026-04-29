@@ -179,6 +179,104 @@ export const translations = {
     langRu: "Русский",
     langUk: "Українська",
     langEn: "English",
+
+    // Nav extra
+    explore: "Обзор",
+
+    // Cookie banner
+    cookieTitle: "Мы используем cookies",
+    cookieDesc: "Мы используем cookies для работы авторизации и сохранения ваших настроек. Подробнее — в",
+    cookiePrivacyLink: "политике конфиденциальности",
+    cookieDecline: "Только необходимые",
+    cookieAccept: "Принять все",
+    closeAria: "Закрыть",
+
+    // Splash / loader
+    splashTagline: "Коллекция фильмов",
+
+    // Legal footer
+    allRightsReserved: "Все права защищены.",
+    footerPrivacy: "Конфиденциальность",
+    footerTerms: "Условия",
+    footerContact: "Контакты",
+
+    // Notifications
+    notifications: "Уведомления",
+    noNotificationsTitle: "Уведомлений пока нет",
+    noNotificationsDesc: "Они появятся когда кто-то подпишется или лайкнет фильм",
+    notifFollow: "подписался на вас",
+    notifLike: "лайкнул ваш фильм",
+    notifComment: "прокомментировал фильм",
+
+    // Feed extra
+    feedEmptyTitle: "Лента пуста",
+    feedEmptyDesc: "Пока никто не добавил фильмы в публичные списки",
+    loadMore: "Загрузить ещё",
+    allFilters: "Все",
+    addedTo: "добавил в",
+
+    // Follow
+    youAreFollowing: "Вы подписаны",
+    follow: "Подписаться",
+
+    // Watch status
+    wantToWatch: "Хочу посмотреть",
+    statusWatching: "Смотрю",
+    statusWatched: "Посмотрел",
+    addStatus: "Добавить статус",
+    removeStatus: "Удалить статус",
+    statusRemoved: "Статус удалён",
+    myRating: "Моя оценка:",
+
+    // Lists edit
+    editListTitle: "Редактировать список",
+    backToList: "Назад к списку",
+    listNameLabel: "Название",
+    descLabel: "Описание",
+    descListPlaceholder: "Короткое описание списка...",
+    listNamePlaceholderEdit: "Мои любимые фильмы",
+    visibility: "Видимость",
+    publicDesc: "Виден всем",
+    privateDesc: "Только вам",
+    listUpdated: "Список обновлён",
+    saveError: "Ошибка сохранения",
+    saving: "Сохранение...",
+    saveBtn: "Сохранить",
+
+    // User pages
+    statListsLabel: "Списков",
+    statFollowers: "Подписчиков",
+    statFollowing: "Подписок",
+    userListsHeading: "Списки",
+    noPublicListsYet: "Публичных списков ещё нет",
+    listEmpty: "Список пуст",
+
+    // Movie page extra
+    trailer: "Трейлер",
+    similarMovies: "Похожие фильмы",
+    cancelReply: "Отмена",
+    reply: "Ответить",
+    replyTo: "Ответить",
+
+    // Profile achievements
+    favoriteGenres: "Любимые жанры",
+    achievements: "Достижения",
+    statTotalMovies: "Всего фильмов",
+    statWatched: "Посмотрел",
+    statFollowersShort: "Подписчиков",
+    statLikes: "Лайков",
+    achFirstMovie: "Первый фильм",
+    achFirstMovieDesc: "Добавил первый фильм",
+    achCollector: "Коллекционер",
+    achCollectorDesc: "10+ фильмов в коллекции",
+    achCinephile: "Киноман",
+    achCinephileDesc: "50+ фильмов",
+    achWatcher: "Смотритель",
+    achWatcherDesc: "Посмотрел 10 фильмов",
+    achSocial: "Социальный",
+    achSocialDesc: "10+ подписчиков",
+    achCurator: "Куратор",
+    achCuratorDesc: "Создал 3+ списка",
   },
 
   uk: {
@@ -359,6 +457,104 @@ export const translations = {
     langRu: "Русский",
     langUk: "Українська",
     langEn: "English",
+
+    // Nav extra
+    explore: "Огляд",
+
+    // Cookie banner
+    cookieTitle: "Ми використовуємо cookies",
+    cookieDesc: "Ми використовуємо cookies для авторизації та збереження ваших налаштувань. Докладніше — у",
+    cookiePrivacyLink: "політиці конфіденційності",
+    cookieDecline: "Тільки необхідні",
+    cookieAccept: "Прийняти всі",
+    closeAria: "Закрити",
+
+    // Splash / loader
+    splashTagline: "Колекція фільмів",
+
+    // Legal footer
+    allRightsReserved: "Усі права захищені.",
+    footerPrivacy: "Конфіденційність",
+    footerTerms: "Умови",
+    footerContact: "Контакти",
+
+    // Notifications
+    notifications: "Сповіщення",
+    noNotificationsTitle: "Сповіщень ще немає",
+    noNotificationsDesc: "Вони з'являться, коли хтось підпишеться або вподобає фільм",
+    notifFollow: "підписався на вас",
+    notifLike: "вподобав ваш фільм",
+    notifComment: "прокоментував фільм",
+
+    // Feed extra
+    feedEmptyTitle: "Стрічка порожня",
+    feedEmptyDesc: "Поки ніхто не додав фільми до публічних списків",
+    loadMore: "Завантажити ще",
+    allFilters: "Усі",
+    addedTo: "додав до",
+
+    // Follow
+    youAreFollowing: "Ви підписані",
+    follow: "Підписатися",
+
+    // Watch status
+    wantToWatch: "Хочу подивитися",
+    statusWatching: "Дивлюся",
+    statusWatched: "Подивився",
+    addStatus: "Додати статус",
+    removeStatus: "Видалити статус",
+    statusRemoved: "Статус видалено",
+    myRating: "Моя оцінка:",
+
+    // Lists edit
+    editListTitle: "Редагувати список",
+    backToList: "Назад до списку",
+    listNameLabel: "Назва",
+    descLabel: "Опис",
+    descListPlaceholder: "Короткий опис списку...",
+    listNamePlaceholderEdit: "Мої улюблені фільми",
+    visibility: "Видимість",
+    publicDesc: "Видно всім",
+    privateDesc: "Тільки вам",
+    listUpdated: "Список оновлено",
+    saveError: "Помилка збереження",
+    saving: "Збереження...",
+    saveBtn: "Зберегти",
+
+    // User pages
+    statListsLabel: "Списків",
+    statFollowers: "Підписників",
+    statFollowing: "Підписок",
+    userListsHeading: "Списки",
+    noPublicListsYet: "Публічних списків ще немає",
+    listEmpty: "Список порожній",
+
+    // Movie page extra
+    trailer: "Трейлер",
+    similarMovies: "Схожі фільми",
+    cancelReply: "Скасувати",
+    reply: "Відповісти",
+    replyTo: "Відповісти",
+
+    // Profile achievements
+    favoriteGenres: "Улюблені жанри",
+    achievements: "Досягнення",
+    statTotalMovies: "Усього фільмів",
+    statWatched: "Подивився",
+    statFollowersShort: "Підписників",
+    statLikes: "Вподобань",
+    achFirstMovie: "Перший фільм",
+    achFirstMovieDesc: "Додав перший фільм",
+    achCollector: "Колекціонер",
+    achCollectorDesc: "10+ фільмів у колекції",
+    achCinephile: "Кіноман",
+    achCinephileDesc: "50+ фільмів",
+    achWatcher: "Глядач",
+    achWatcherDesc: "Подивився 10 фільмів",
+    achSocial: "Соціальний",
+    achSocialDesc: "10+ підписників",
+    achCurator: "Куратор",
+    achCuratorDesc: "Створив 3+ списки",
   },
 
   en: {
@@ -539,6 +735,104 @@ export const translations = {
     langRu: "Русский",
     langUk: "Українська",
     langEn: "English",
+
+    // Nav extra
+    explore: "Explore",
+
+    // Cookie banner
+    cookieTitle: "We use cookies",
+    cookieDesc: "We use cookies for authentication and to remember your preferences. Read more in the",
+    cookiePrivacyLink: "privacy policy",
+    cookieDecline: "Only essential",
+    cookieAccept: "Accept all",
+    closeAria: "Close",
+
+    // Splash / loader
+    splashTagline: "Movie collection",
+
+    // Legal footer
+    allRightsReserved: "All rights reserved.",
+    footerPrivacy: "Privacy",
+    footerTerms: "Terms",
+    footerContact: "Contact",
+
+    // Notifications
+    notifications: "Notifications",
+    noNotificationsTitle: "No notifications yet",
+    noNotificationsDesc: "They will appear when someone follows you or likes a movie",
+    notifFollow: "started following you",
+    notifLike: "liked your movie",
+    notifComment: "commented on a movie",
+
+    // Feed extra
+    feedEmptyTitle: "Feed is empty",
+    feedEmptyDesc: "No one has added movies to public lists yet",
+    loadMore: "Load more",
+    allFilters: "All",
+    addedTo: "added to",
+
+    // Follow
+    youAreFollowing: "Following",
+    follow: "Follow",
+
+    // Watch status
+    wantToWatch: "Want to watch",
+    statusWatching: "Watching",
+    statusWatched: "Watched",
+    addStatus: "Add status",
+    removeStatus: "Remove status",
+    statusRemoved: "Status removed",
+    myRating: "My rating:",
+
+    // Lists edit
+    editListTitle: "Edit list",
+    backToList: "Back to list",
+    listNameLabel: "Name",
+    descLabel: "Description",
+    descListPlaceholder: "Short description of the list...",
+    listNamePlaceholderEdit: "My favorite movies",
+    visibility: "Visibility",
+    publicDesc: "Visible to everyone",
+    privateDesc: "Only you",
+    listUpdated: "List updated",
+    saveError: "Save error",
+    saving: "Saving...",
+    saveBtn: "Save",
+
+    // User pages
+    statListsLabel: "Lists",
+    statFollowers: "Followers",
+    statFollowing: "Following",
+    userListsHeading: "Lists",
+    noPublicListsYet: "No public lists yet",
+    listEmpty: "List is empty",
+
+    // Movie page extra
+    trailer: "Trailer",
+    similarMovies: "Similar movies",
+    cancelReply: "Cancel",
+    reply: "Reply",
+    replyTo: "Reply to",
+
+    // Profile achievements
+    favoriteGenres: "Favorite genres",
+    achievements: "Achievements",
+    statTotalMovies: "Total movies",
+    statWatched: "Watched",
+    statFollowersShort: "Followers",
+    statLikes: "Likes",
+    achFirstMovie: "First movie",
+    achFirstMovieDesc: "Added your first movie",
+    achCollector: "Collector",
+    achCollectorDesc: "10+ movies in collection",
+    achCinephile: "Cinephile",
+    achCinephileDesc: "50+ movies",
+    achWatcher: "Watcher",
+    achWatcherDesc: "Watched 10 movies",
+    achSocial: "Social",
+    achSocialDesc: "10+ followers",
+    achCurator: "Curator",
+    achCuratorDesc: "Created 3+ lists",
   },
 } as const;
 

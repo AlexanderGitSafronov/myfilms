@@ -6,6 +6,7 @@ import { ToastProvider } from "@/components/ui/toast";
 import { Navbar, MobileNav } from "@/components/layout/navbar";
 import { PWARegister } from "@/components/pwa-register";
 import { I18nProvider } from "@/lib/i18n-context";
+import { getServerLocale } from "@/lib/i18n-server";
 import { SplashLoader } from "@/components/ui/page-loader";
 import { CookieBanner } from "@/components/cookie-banner";
 import { LegalFooter } from "@/components/layout/legal-footer";
@@ -39,9 +40,10 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getServerLocale();
   return (
-    <html lang="en" className={`${inter.variable} dark`}>
+    <html lang={locale} className={`${inter.variable} dark`}>
       <head>
         <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
         <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
@@ -53,7 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="prefetch" href="/profile" />
       </head>
       <body className="min-h-screen flex flex-col bg-black text-white antialiased">
-        <I18nProvider>
+        <I18nProvider initialLocale={locale}>
         <SessionProvider>
           <ToastProvider>
             <SplashLoader />

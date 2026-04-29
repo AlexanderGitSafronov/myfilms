@@ -8,12 +8,14 @@ import { ArrowLeft, Save } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 import { motion } from "framer-motion";
+import { useI18n } from "@/lib/i18n-context";
 
 export default function EditListPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const { data: session, status } = useSession();
   const router = useRouter();
   const { toast } = useToast();
+  const { t } = useI18n();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -49,11 +51,11 @@ export default function EditListPage({ params }: { params: Promise<{ id: string 
     });
     setSaving(false);
     if (res.ok) {
-      toast("Список обновлён", "success");
+      toast(t("listUpdated"), "success");
       router.push(`/lists/${id}`);
     } else {
       const err = await res.json().catch(() => ({}));
-      toast(err.error || "Ошибка сохранения", "error");
+      toast(err.error || t("saveError"), "error");
     }
   }
 
@@ -71,7 +73,7 @@ export default function EditListPage({ params }: { params: Promise<{ id: string 
     <div className="max-w-lg mx-auto px-4 sm:px-6 py-8">
       <Link href={`/lists/${id}`} className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-white transition-colors mb-6">
         <ArrowLeft className="h-3.5 w-3.5" />
-        Назад к списку
+        {t("backToList")}
       </Link>
 
       <motion.div
@@ -79,13 +81,13 @@ export default function EditListPage({ params }: { params: Promise<{ id: string 
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
       >
-        <h1 className="text-2xl font-bold text-white mb-8">Редактировать список</h1>
+        <h1 className="text-2xl font-bold text-white mb-8">{t("editListTitle")}</h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Name */}
           <div>
             <label className="block text-sm font-medium text-zinc-300 mb-1.5">
-              Название <span className="text-red-500">*</span>
+              {t("listNameLabel")} <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -94,14 +96,14 @@ export default function EditListPage({ params }: { params: Promise<{ id: string 
               maxLength={80}
               required
               className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-red-600/50 focus:bg-white/[0.06] transition-colors"
-              placeholder="Мои любимые фильмы"
+              placeholder={t("listNamePlaceholderEdit")}
             />
           </div>
 
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-zinc-300 mb-1.5">
-              Описание <span className="text-zinc-600 font-normal">(необязательно)</span>
+              {t("descLabel")} <span className="text-zinc-600 font-normal">({t("descriptionOptional").replace(/^.*\(/, "").replace(/\)$/, "")})</span>
             </label>
             <textarea
               value={description}
@@ -109,17 +111,17 @@ export default function EditListPage({ params }: { params: Promise<{ id: string 
               maxLength={300}
               rows={3}
               className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-red-600/50 focus:bg-white/[0.06] transition-colors resize-none"
-              placeholder="Короткое описание списка..."
+              placeholder={t("descListPlaceholder")}
             />
           </div>
 
           {/* Visibility */}
           <div>
-            <label className="block text-sm font-medium text-zinc-300 mb-2">Видимость</label>
+            <label className="block text-sm font-medium text-zinc-300 mb-2">{t("visibility")}</label>
             <div className="flex gap-3">
               {[
-                { value: true, label: "Публичный", desc: "Виден всем" },
-                { value: false, label: "Приватный", desc: "Только вам" },
+                { value: true, label: t("public"), desc: t("publicDesc") },
+                { value: false, label: t("private"), desc: t("privateDesc") },
               ].map(({ value, label, desc }) => (
                 <button
                   key={String(value)}
@@ -145,12 +147,12 @@ export default function EditListPage({ params }: { params: Promise<{ id: string 
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
-                Сохранение...
+                {t("saving")}
               </span>
             ) : (
               <span className="flex items-center gap-2">
                 <Save className="h-4 w-4" />
-                Сохранить
+                {t("saveBtn")}
               </span>
             )}
           </Button>

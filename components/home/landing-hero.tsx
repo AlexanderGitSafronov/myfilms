@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Film, ArrowRight, Star, List, Share2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n-context";
 
 // Fixed particle definitions — no Math.random() at render time (avoids hydration mismatch)
 const PARTICLES = [
@@ -45,9 +46,9 @@ function Particles() {
 }
 
 // ── Animated word reveal ────────────────────────────────────────────────────
-function AnimatedTitle() {
-  const line1 = ["Делитесь", "любимыми", "фильмами"];
-  const line2 = ["с", "друзьями"];
+function AnimatedTitle({ line1Text, line2Text }: { line1Text: string; line2Text: string }) {
+  const line1 = line1Text.split(" ");
+  const line2 = line2Text.split(" ");
 
   return (
     <h1 className="text-5xl sm:text-7xl font-bold leading-[1.05] mb-6 tracking-tight">
@@ -160,6 +161,7 @@ function StatBadge({ icon: Icon, label }: { icon: React.ElementType; label: stri
 // ── Main component ───────────────────────────────────────────────────────────
 export function LandingHero({ movies }: { movies: PosterMovie[] }) {
   const [mounted, setMounted] = useState(false);
+  const { t } = useI18n();
   useEffect(() => setMounted(true), []);
 
   // Fallback cards when no movies from TMDB
@@ -236,11 +238,11 @@ export function LandingHero({ movies }: { movies: PosterMovie[] }) {
             transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           >
             <Film className="h-3.5 w-3.5 text-red-400" />
-            <span className="text-sm text-red-400 font-medium">Рекомендации фильмов — просто</span>
+            <span className="text-sm text-red-400 font-medium">{t("tagline")}</span>
           </motion.div>
         </motion.div>
 
-        <AnimatedTitle />
+        <AnimatedTitle line1Text={t("heroTitle1")} line2Text={t("heroTitle2")} />
 
         <motion.p
           className="text-lg text-zinc-400 mb-10 max-w-xl mx-auto leading-relaxed"
@@ -248,7 +250,7 @@ export function LandingHero({ movies }: { movies: PosterMovie[] }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.0, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          Создавайте подборки, следите за друзьями<br className="hidden sm:block" /> и никогда не забывайте рекомендации.
+          {t("heroDesc")}
         </motion.p>
 
         <motion.div
@@ -264,7 +266,7 @@ export function LandingHero({ movies }: { movies: PosterMovie[] }) {
                 className="w-full sm:w-auto text-base px-7"
                 style={{ boxShadow: "0 0 30px rgba(220,38,38,0.4), 0 0 60px rgba(220,38,38,0.15)" }}
               >
-                Начать бесплатно
+                {t("getStarted")}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </motion.div>
@@ -272,7 +274,7 @@ export function LandingHero({ movies }: { movies: PosterMovie[] }) {
           <Link href="/login">
             <motion.div whileTap={{ scale: 0.96 }}>
               <Button size="lg" variant="outline" className="w-full sm:w-auto text-base px-7">
-                Войти
+                {t("signIn")}
               </Button>
             </motion.div>
           </Link>
@@ -285,9 +287,9 @@ export function LandingHero({ movies }: { movies: PosterMovie[] }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.4, duration: 0.8 }}
         >
-          <StatBadge icon={Film}   label="Любой сайт — IMDb, Multiplex, Megogo" />
-          <StatBadge icon={Users}  label="Подписки на друзей" />
-          <StatBadge icon={Star}   label="Лента рекомендаций" />
+          <StatBadge icon={Film}   label={t("supportsLinks")} />
+          <StatBadge icon={Users}  label={t("featureShare")} />
+          <StatBadge icon={Star}   label={t("feed")} />
         </motion.div>
       </div>
 
@@ -317,9 +319,9 @@ export function LandingHero({ movies }: { movies: PosterMovie[] }) {
       >
         <div className="grid sm:grid-cols-3 gap-4">
           {[
-            { icon: List,   title: "Организация",  desc: "Списки «Хочу посмотреть», «Любимые», «Советую друзьям»" },
-            { icon: Film,   title: "Любой сайт",   desc: "Вставьте ссылку — постер и описание подтянутся автоматически" },
-            { icon: Share2, title: "Поделиться",   desc: "Публичная ссылка на список — друзья увидят все ваши рекомендации" },
+            { icon: List,   title: t("featureOrganize"), desc: t("featureOrganizeDesc") },
+            { icon: Film,   title: t("featureDiscover"), desc: t("featureDiscoverDesc") },
+            { icon: Share2, title: t("featureShare"),    desc: t("featureShareDesc") },
           ].map(({ icon: Icon, title, desc }, i) => (
             <motion.div
               key={title}

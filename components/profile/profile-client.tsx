@@ -10,6 +10,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { ListCard } from "@/components/lists/list-card";
 import { useToast } from "@/components/ui/toast";
 import { useI18n } from "@/lib/i18n-context";
+import type { TranslationKey } from "@/lib/translations";
 import { motion } from "framer-motion";
 import { useSession } from "next-auth/react";
 
@@ -40,14 +41,14 @@ interface Stats {
   followingCount: number;
 }
 
-function getAchievements(stats: Stats, profile: UserProfile) {
+function getAchievements(stats: Stats, profile: UserProfile): Array<{ id: string; icon: string; labelKey: TranslationKey; descKey: TranslationKey; unlocked: boolean }> {
   return [
-    { id: "first_movie", icon: "🎬", label: "Первый фильм",  desc: "Добавил первый фильм",     unlocked: stats.totalMovies >= 1 },
-    { id: "collector10", icon: "📚", label: "Коллекционер",  desc: "10+ фильмов в коллекции",   unlocked: stats.totalMovies >= 10 },
-    { id: "cinephile50", icon: "🏆", label: "Киноман",       desc: "50+ фильмов",               unlocked: stats.totalMovies >= 50 },
-    { id: "watched10",   icon: "✅", label: "Смотритель",    desc: "Посмотрел 10 фильмов",      unlocked: stats.watchedCount >= 10 },
-    { id: "social",      icon: "👥", label: "Социальный",    desc: "10+ подписчиков",           unlocked: stats.followerCount >= 10 },
-    { id: "curator",     icon: "📋", label: "Куратор",       desc: "Создал 3+ списка",          unlocked: profile._count.lists >= 3 },
+    { id: "first_movie", icon: "🎬", labelKey: "achFirstMovie", descKey: "achFirstMovieDesc", unlocked: stats.totalMovies >= 1 },
+    { id: "collector10", icon: "📚", labelKey: "achCollector",  descKey: "achCollectorDesc",  unlocked: stats.totalMovies >= 10 },
+    { id: "cinephile50", icon: "🏆", labelKey: "achCinephile",  descKey: "achCinephileDesc",  unlocked: stats.totalMovies >= 50 },
+    { id: "watched10",   icon: "✅", labelKey: "achWatcher",    descKey: "achWatcherDesc",    unlocked: stats.watchedCount >= 10 },
+    { id: "social",      icon: "👥", labelKey: "achSocial",     descKey: "achSocialDesc",     unlocked: stats.followerCount >= 10 },
+    { id: "curator",     icon: "📋", labelKey: "achCurator",    descKey: "achCuratorDesc",    unlocked: profile._count.lists >= 3 },
   ];
 }
 
@@ -147,10 +148,10 @@ export function ProfileClient({
       {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
         {[
-          { icon: Film,         label: "Всего фильмов", value: stats.totalMovies },
-          { icon: CheckCircle2, label: "Посмотрел",     value: stats.watchedCount },
-          { icon: Users,        label: "Подписчиков",   value: stats.followerCount },
-          { icon: Star,         label: "Лайков",        value: profile._count.likes },
+          { icon: Film,         label: t("statTotalMovies"),    value: stats.totalMovies },
+          { icon: CheckCircle2, label: t("statWatched"),        value: stats.watchedCount },
+          { icon: Users,        label: t("statFollowersShort"), value: stats.followerCount },
+          { icon: Star,         label: t("statLikes"),          value: profile._count.likes },
         ].map(({ icon: Icon, label, value }, i) => (
           <motion.div
             key={label}
@@ -169,7 +170,7 @@ export function ProfileClient({
       {/* Top genres */}
       {stats.topGenres.length > 0 && (
         <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-5 mb-8">
-          <h2 className="text-sm font-semibold text-zinc-400 mb-3">Любимые жанры</h2>
+          <h2 className="text-sm font-semibold text-zinc-400 mb-3">{t("favoriteGenres")}</h2>
           <div className="space-y-2">
             {stats.topGenres.map(({ genre, count }, i) => {
               const max = stats.topGenres[0].count;
@@ -196,10 +197,10 @@ export function ProfileClient({
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-4">
           <Trophy className="h-4 w-4 text-yellow-400" />
-          <h2 className="text-lg font-semibold text-white">Достижения</h2>
+          <h2 className="text-lg font-semibold text-white">{t("achievements")}</h2>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {getAchievements(stats, profile).map(({ id, icon, label, desc, unlocked }, i) => (
+          {getAchievements(stats, profile).map(({ id, icon, labelKey, descKey, unlocked }, i) => (
             <motion.div
               key={id}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -211,8 +212,8 @@ export function ProfileClient({
             >
               <span className="text-2xl">{icon}</span>
               <div className="min-w-0">
-                <p className={`text-sm font-medium ${unlocked ? "text-white" : "text-zinc-500"}`}>{label}</p>
-                <p className="text-xs text-zinc-600 truncate">{desc}</p>
+                <p className={`text-sm font-medium ${unlocked ? "text-white" : "text-zinc-500"}`}>{t(labelKey)}</p>
+                <p className="text-xs text-zinc-600 truncate">{t(descKey)}</p>
               </div>
             </motion.div>
           ))}

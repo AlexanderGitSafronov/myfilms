@@ -10,6 +10,7 @@ import { Star, Rss, List, ChevronDown, Filter } from "lucide-react";
 import { FadeUp, StaggerList, StaggerItem } from "@/components/motion";
 import { formatYear, formatRating, formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useI18n } from "@/lib/i18n-context";
 
 interface FeedItem {
   id: string;
@@ -36,6 +37,7 @@ export function FeedClient({
   const [nextCursor, setNextCursor] = useState<string | null>(initialCursor);
   const [loadingMore, setLoadingMore] = useState(false);
   const [genreFilter, setGenreFilter] = useState<string | null>(null);
+  const { t } = useI18n();
 
   const allGenres = Array.from(new Set(items.flatMap(i => i.movie.genres))).slice(0, 12);
   const filtered = genreFilter ? items.filter(i => i.movie.genres.includes(genreFilter)) : items;
@@ -56,15 +58,15 @@ export function FeedClient({
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center gap-3 mb-8">
         <Rss className="h-6 w-6 text-red-500" />
-        <h1 className="text-2xl font-bold text-white">Лента</h1>
+        <h1 className="text-2xl font-bold text-white">{t("feed")}</h1>
       </div>
 
       <FadeUp>
         {items.length === 0 ? (
           <div className="text-center py-20">
             <Rss className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
-            <p className="text-zinc-400 font-medium">Лента пуста</p>
-            <p className="text-zinc-600 text-sm mt-1">Пока никто не добавил фильмы в публичные списки</p>
+            <p className="text-zinc-400 font-medium">{t("feedEmptyTitle")}</p>
+            <p className="text-zinc-600 text-sm mt-1">{t("feedEmptyDesc")}</p>
           </div>
         ) : (
           <>
@@ -74,7 +76,7 @@ export function FeedClient({
                   onClick={() => setGenreFilter(null)}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${!genreFilter ? "bg-red-600/20 border-red-600/40 text-red-400" : "border-white/10 text-zinc-400 hover:border-white/20"}`}
                 >
-                  <Filter className="h-3 w-3" />Все
+                  <Filter className="h-3 w-3" />{t("allFilters")}
                 </button>
                 {allGenres.map(g => (
                   <button
@@ -100,7 +102,7 @@ export function FeedClient({
                         <Link href={`/${item.list.user.username}`} className="font-semibold text-white hover:text-red-400 transition-colors">
                           {item.list.user.name || item.list.user.username}
                         </Link>
-                        <span className="text-zinc-500"> добавил в </span>
+                        <span className="text-zinc-500"> {t("addedTo")} </span>
                         <Link href={`/${item.list.user.username}/${item.list.slug}`} className="inline-flex items-center gap-1 text-red-400 hover:text-red-300 transition-colors font-medium">
                           <List className="h-3 w-3 flex-shrink-0" />{item.list.name}
                         </Link>
@@ -151,7 +153,7 @@ export function FeedClient({
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                       </svg>
                     ) : <ChevronDown className="h-4 w-4 mr-2" />}
-                    Загрузить ещё
+                    {t("loadMore")}
                   </Button>
                 </motion.div>
               </div>

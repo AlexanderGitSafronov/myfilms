@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { UserPlus, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/lib/i18n-context";
 
 interface FollowButtonProps {
   username: string;
@@ -16,6 +17,7 @@ export function FollowButton({ username, initialFollowing }: FollowButtonProps) 
   const router = useRouter();
   const [following, setFollowing] = useState(initialFollowing);
   const [loading, setLoading] = useState(false);
+  const { t } = useI18n();
 
   async function toggle() {
     if (!session) { router.push("/login"); return; }
@@ -38,9 +40,9 @@ export function FollowButton({ username, initialFollowing }: FollowButtonProps) 
       className="mt-4"
     >
       {following ? (
-        <><UserCheck className="h-4 w-4 mr-2" />Вы подписаны</>
+        <><UserCheck className="h-4 w-4 mr-2" />{t("youAreFollowing")}</>
       ) : (
-        <><UserPlus className="h-4 w-4 mr-2" />Подписаться</>
+        <><UserPlus className="h-4 w-4 mr-2" />{t("follow")}</>
       )}
     </Button>
   );

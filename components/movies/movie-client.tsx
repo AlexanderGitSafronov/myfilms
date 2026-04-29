@@ -196,7 +196,7 @@ export function MovieClient({
                   className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm bg-red-600/10 text-red-400 hover:bg-red-600/20 border border-red-600/20 transition-colors"
                 >
                   <Play className="h-3.5 w-3.5 fill-red-400" />
-                  Трейлер
+                  {t("trailer")}
                 </a>
               )}
               {movie.sourceUrl && (
@@ -228,7 +228,7 @@ export function MovieClient({
       {/* Similar movies (loaded client-side) */}
       {similar.length > 0 && (
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4">Похожие фильмы</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">{t("similarMovies")}</h2>
           <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
             {similar.map((m) => (
               <a key={m.id} href={`/search?q=${encodeURIComponent(m.title)}`} className="flex-shrink-0 w-24 group">
@@ -305,7 +305,7 @@ export function MovieClient({
                         className="mt-1.5 ml-1 inline-flex items-center gap-1 text-xs text-zinc-500 hover:text-red-400 transition-colors"
                       >
                         <Reply className="h-3 w-3" />
-                        {replyingTo === c.id ? "Отмена" : "Ответить"}
+                        {replyingTo === c.id ? t("cancelReply") : t("reply")}
                       </button>
                     )}
 
@@ -313,7 +313,7 @@ export function MovieClient({
                       <form onSubmit={(e) => handleReply(e, c.id)} className="mt-2 flex gap-2">
                         <Avatar src={session.user.image} name={session.user.name} size="sm" className="flex-shrink-0 mt-0.5" />
                         <Textarea
-                          placeholder={`Ответить ${c.user.name || c.user.username}...`}
+                          placeholder={`${t("replyTo")} ${c.user.name || c.user.username}...`}
                           value={replyText}
                           onChange={(e) => setReplyText(e.target.value)}
                           rows={1}

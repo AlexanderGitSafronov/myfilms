@@ -9,6 +9,8 @@ import { Avatar } from "@/components/ui/avatar";
 import { FadeUp, StaggerList, StaggerItem } from "@/components/motion";
 import { formatDate } from "@/lib/utils";
 import { motion } from "framer-motion";
+import { useI18n } from "@/lib/i18n-context";
+import type { TranslationKey } from "@/lib/translations";
 
 interface Notification {
   id: string;
@@ -19,10 +21,10 @@ interface Notification {
   fromUser: { id: string; name: string | null; username: string; image: string | null } | null;
 }
 
-const TYPE_CONFIG = {
-  FOLLOW:  { icon: UserPlus,       color: "text-blue-400",   bg: "bg-blue-500/10",   text: "подписался на вас" },
-  LIKE:    { icon: Heart,          color: "text-red-400",    bg: "bg-red-500/10",    text: "лайкнул ваш фильм" },
-  COMMENT: { icon: MessageCircle,  color: "text-green-400",  bg: "bg-green-500/10",  text: "прокомментировал фильм" },
+const TYPE_CONFIG: Record<"FOLLOW" | "LIKE" | "COMMENT", { icon: React.ElementType; color: string; bg: string; textKey: TranslationKey }> = {
+  FOLLOW:  { icon: UserPlus,       color: "text-blue-400",   bg: "bg-blue-500/10",   textKey: "notifFollow" },
+  LIKE:    { icon: Heart,          color: "text-red-400",    bg: "bg-red-500/10",    textKey: "notifLike" },
+  COMMENT: { icon: MessageCircle,  color: "text-green-400",  bg: "bg-green-500/10",  textKey: "notifComment" },
 };
 
 export default function NotificationsPage() {
@@ -30,6 +32,7 @@ export default function NotificationsPage() {
   const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useI18n();
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/login");
@@ -58,14 +61,14 @@ export default function NotificationsPage() {
       <FadeUp>
         <div className="flex items-center gap-3 mb-8">
           <Bell className="h-6 w-6 text-red-500" />
-          <h1 className="text-2xl font-bold text-white">Уведомления</h1>
+          <h1 className="text-2xl font-bold text-white">{t("notifications")}</h1>
         </div>
 
         {notifications.length === 0 ? (
           <div className="text-center py-20">
             <Bell className="h-12 w-12 text-zinc-700 mx-auto mb-4" />
-            <p className="text-zinc-400 font-medium">Уведомлений пока нет</p>
-            <p className="text-zinc-600 text-sm mt-1">Они появятся когда кто-то подпишется или лайкнет фильм</p>
+            <p className="text-zinc-400 font-medium">{t("noNotificationsTitle")}</p>
+            <p className="text-zinc-600 text-sm mt-1">{t("noNotificationsDesc")}</p>
           </div>
         ) : (
           <StaggerList className="space-y-2">
@@ -101,7 +104,7 @@ export default function NotificationsPage() {
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-white">
                           <span className="font-semibold">{n.fromUser?.name || n.fromUser?.username}</span>
-                          {" "}{cfg.text}
+                          {" "}{t(cfg.textKey)}
                         </p>
                         <p className="text-xs text-zinc-500 mt-0.5">{formatDate(n.createdAt)}</p>
                       </div>

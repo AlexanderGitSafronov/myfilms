@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Film, ArrowRight, Rss, List, Users } from "lucide-react";
 import { FadeUp, StaggerList, StaggerItem } from "@/components/motion";
 import { LandingHero } from "@/components/home/landing-hero";
+import { getServerLocale, tServer } from "@/lib/i18n-server";
 
 async function getTrendingPosters() {
   try {
@@ -24,6 +25,8 @@ async function getTrendingPosters() {
 export default async function HomePage() {
   const session = await auth();
   const movies = await getTrendingPosters();
+  const locale = await getServerLocale();
+  const t = (k: Parameters<typeof tServer>[1]) => tServer(locale, k);
 
   if (session) {
     const lists = await prisma.movieList.findMany({
@@ -45,9 +48,9 @@ export default async function HomePage() {
         <FadeUp>
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-white">
-              С возвращением, {session.user.name?.split(" ")[0]} 👋
+              {t("welcomeBack")} {session.user.name?.split(" ")[0]} 👋
             </h1>
-            <p className="text-zinc-400 mt-1">Ваша коллекция фильмов</p>
+            <p className="text-zinc-400 mt-1">{t("movieCollectionOverview")}</p>
           </div>
         </FadeUp>
 
@@ -55,10 +58,10 @@ export default async function HomePage() {
         <FadeUp delay={0.05}>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-10">
             {[
-              { href: "/add-movie", icon: Film,  label: "Добавить", color: "from-red-600/80 to-red-900/80", border: "border-red-600/20" },
-              { href: "/feed",      icon: Rss,   label: "Лента",          color: "from-zinc-800 to-zinc-900", border: "border-white/5" },
-              { href: "/lists",     icon: List,  label: "Мои списки",     color: "from-zinc-800 to-zinc-900", border: "border-white/5" },
-              { href: "/profile",   icon: Users, label: "Профиль",        color: "from-zinc-800 to-zinc-900", border: "border-white/5" },
+              { href: "/add-movie", icon: Film,  label: t("addMovie"),  color: "from-red-600/80 to-red-900/80", border: "border-red-600/20" },
+              { href: "/feed",      icon: Rss,   label: t("feed"),      color: "from-zinc-800 to-zinc-900", border: "border-white/5" },
+              { href: "/lists",     icon: List,  label: t("myLists"),   color: "from-zinc-800 to-zinc-900", border: "border-white/5" },
+              { href: "/profile",   icon: Users, label: t("profile"),   color: "from-zinc-800 to-zinc-900", border: "border-white/5" },
             ].map(({ href, icon: Icon, label, color, border }) => (
               <Link
                 key={href}
@@ -75,9 +78,9 @@ export default async function HomePage() {
         {/* Recent lists */}
         <FadeUp delay={0.1}>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-white">Ваши списки</h2>
+            <h2 className="text-lg font-semibold text-white">{t("yourLists")}</h2>
             <Link href="/lists" className="text-sm text-red-400 hover:text-red-300 flex items-center gap-1 transition-colors">
-              Смотреть все <ArrowRight className="h-3.5 w-3.5" />
+              {t("viewAll")} <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
         </FadeUp>
@@ -86,10 +89,10 @@ export default async function HomePage() {
           <FadeUp delay={0.15}>
             <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-10 text-center">
               <Film className="h-10 w-10 text-zinc-700 mx-auto mb-3" />
-              <p className="text-zinc-400 font-medium">Списков ещё нет</p>
-              <p className="text-sm text-zinc-600 mt-1">Начните с добавления фильмов в коллекцию</p>
+              <p className="text-zinc-400 font-medium">{t("noListsYet")}</p>
+              <p className="text-sm text-zinc-600 mt-1">{t("startByAdding")}</p>
               <Link href="/add-movie">
-                <Button className="mt-4">Добавить первый фильм</Button>
+                <Button className="mt-4">{t("addFirstMovie")}</Button>
               </Link>
             </div>
           </FadeUp>
@@ -114,7 +117,7 @@ export default async function HomePage() {
                     )}
                   </div>
                   <p className="font-medium text-white text-sm truncate group-hover:text-red-400 transition-colors">{list.name}</p>
-                  <p className="text-xs text-zinc-500 mt-0.5">{list._count.movies} фильмов</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">{list._count.movies} {t("films")}</p>
                 </Link>
               </StaggerItem>
             ))}

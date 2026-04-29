@@ -40,7 +40,7 @@ export function Navbar() {
   const navLinks = [
     { href: "/", icon: Home, label: t("home") },
     { href: "/feed", icon: Rss, label: t("feed") },
-    { href: "/explore", icon: Compass, label: "Обзор" },
+    { href: "/explore", icon: Compass, label: t("explore") },
     { href: "/lists", icon: List, label: t("myLists") },
     { href: "/add-movie", icon: Plus, label: t("addMovie") },
   ];
@@ -200,7 +200,7 @@ export function MobileNav() {
     ? [
         { href: "/", icon: Home, label: t("home") },
         { href: "/feed", icon: Rss, label: t("feed") },
-        { href: "/explore", icon: Compass, label: "Обзор" },
+        { href: "/explore", icon: Compass, label: t("explore") },
         { href: "/add-movie", icon: Plus, label: t("addMovie") },
         { href: "/profile", icon: User, label: t("profile") },
       ]
