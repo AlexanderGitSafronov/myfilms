@@ -22,6 +22,18 @@ function writeLocaleCookie(l: Locale) {
   document.cookie = `${COOKIE_NAME}=${l}; path=/; max-age=${COOKIE_MAX_AGE}; SameSite=Lax`;
 }
 
+// SW serves HTML pages stale-while-revalidate, so a plain reload would show
+// the previous locale. Clear the pages cache first so the reload hits network.
+async function clearPagesCacheAndReload() {
+  try {
+    if ("caches" in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.filter((k) => k.includes("pages")).map((k) => caches.delete(k)));
+    }
+  } catch {}
+  window.location.reload();
+}
+
 export function I18nProvider({ children, initialLocale = "ru" }: { children: ReactNode; initialLocale?: Locale }) {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
 
@@ -29,8 +41,7 @@ export function I18nProvider({ children, initialLocale = "ru" }: { children: Rea
     setLocaleState(l);
     writeLocaleCookie(l);
     try { localStorage.setItem("locale", l); } catch {}
-    // Reload so server-rendered content also re-translates with the new cookie.
-    if (typeof window !== "undefined") window.location.reload();
+    if (typeof window !== "undefined") clearPagesCacheAndReload();
   }
 
   function t(key: TranslationKey): string {
