@@ -48,6 +48,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" type="image/svg+xml" href="/icons/icon.svg" />
         <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
         <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
+        {/* Legacy iOS PWA flag — Next 16 only emits the unprefixed `mobile-web-app-capable`, but iOS Safari still needs this one to honor apple-touch-startup-image */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
         {/* iOS PWA splash screens */}
         <link rel="apple-touch-startup-image" href="/icons/splash/splash-1290x2796.png" media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
         <link rel="apple-touch-startup-image" href="/icons/splash/splash-1179x2556.png" media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" />
